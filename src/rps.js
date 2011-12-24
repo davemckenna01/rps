@@ -1,4 +1,5 @@
 var RPS = function (){
+	var that = this;
 
 	var games = []
 
@@ -26,6 +27,26 @@ var RPS = function (){
 
     this.getId = function(){
     	return id;
+    };
+
+    var players = [];
+
+    this.addPlayer = function(player){
+
+	    if (arguments.length <= 0 || !(arguments[0] instanceof that.Player) ){
+	      throw new Error('addPlayer() takes exactly 1 arg of type Player');
+	    }
+
+	    if (Object.keys(players).length >= 2){
+	    	throw new Error('Games may take a max of 2 Players');
+	    } else {
+	    	players[player.getId()] = player;
+			}
+
+    };
+
+    this.getPlayers = function(){
+    	return players;
     }
 
 	};
