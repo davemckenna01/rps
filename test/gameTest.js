@@ -9,9 +9,21 @@ module.exports = testCase({
     this.rps = new rps.RPS();
 
     //Stubbing Player class
+    //this._Player = this.rps.Player;
+
     this.rps.Player = function(id){
       this.getId = function(){
         return id;
+      };
+
+      var ready = false;
+
+      this.ready = function(){
+        ready = true;
+      };
+
+      this.isReady = function(){
+        return ready;
       }
       
     };    
@@ -20,6 +32,9 @@ module.exports = testCase({
   },
 
   tearDown: function(callback){
+
+    //restoring the Player stub
+    //this.rps.Player = this._Player;
     
     callback();
   },    
@@ -196,6 +211,73 @@ module.exports = testCase({
 
     }    
   
-  })  
+  }),
+
+  "TC 3 - Game.isReady()": testCase({
+
+    "test Game has an isReady method that returns a boolean": function(test) {
+        
+        var game = new this.rps.Game('abc123');
+
+        test.equal(typeof game.isReady(), 'boolean');
+
+        test.done();
+
+    },
+
+    "test should return false if there are 0 or 1 players": function(test) {
+        
+        var game = new this.rps.Game('abc123');
+      
+        test.equal(game.isReady(), false);
+
+        var player1 = new this.rps.Player('p1');
+
+        game.addPlayer(player1);
+
+        test.equal(game.isReady(), false);
+
+        test.done();
+
+    },
+
+    "test should return false if only 1 player ready": function(test) {
+        
+        var game = new this.rps.Game('abc123');
+
+        var player1 = new this.rps.Player('p1');
+        var player2 = new this.rps.Player('p2');
+
+        game.addPlayer(player1);
+        game.addPlayer(player2);
+
+        player1.ready();
+
+        test.equal(game.isReady(), false);
+
+        test.done();
+
+    },
+    
+    "test should return true if both players ready": function(test) {
+        
+        var game = new this.rps.Game('abc123');
+
+        var player1 = new this.rps.Player('p1');
+        var player2 = new this.rps.Player('p2');
+
+        game.addPlayer(player1);
+        game.addPlayer(player2);
+
+        player1.ready();
+        player2.ready();
+
+        test.equal(game.isReady(), true);
+
+        test.done();
+
+    }        
+
+  })
 
 });

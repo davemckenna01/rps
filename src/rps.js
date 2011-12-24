@@ -47,6 +47,28 @@ var RPS = function (){
 
     this.getPlayers = function(){
     	return players;
+    };
+
+    this.isReady = function(){
+
+    	var ready = null;
+
+    	var keys = Object.keys(players);
+
+    	if (keys.length < 2) {
+    		ready = false;
+    	} else if (
+	    	!( players[keys[0]].isReady() && players[keys[1]].isReady() )
+	    ){
+    		ready = false;
+    	} else if (
+    		players[keys[0]].isReady() && players[keys[1]].isReady()
+    	) {
+    		ready = true;
+    	}
+
+    	return ready;
+
     }
 
 	};
