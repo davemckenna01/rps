@@ -1,0 +1,15 @@
+include layout
+
+block content
+
+h1= title
+
+a#createGame(href='#', title='Create Game') Create Game
+
+//p Welcome to #{title}
+
+
+append scripts
+
+script
+	rps.initCreateBtn();
