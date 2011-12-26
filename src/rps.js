@@ -9,6 +9,10 @@ var RPS = function (){
 
 	this.Game = function(id){
 
+    var players = [];
+
+    var inProgress = false;
+
     if (arguments.length <= 0 || typeof arguments[0] != 'string' ){
       throw new Error('Game() takes exactly 1 string arg ');
     }
@@ -28,8 +32,6 @@ var RPS = function (){
     this.getId = function(){
     	return id;
     };
-
-    var players = [];
 
     this.addPlayer = function(player){
 
@@ -69,7 +71,22 @@ var RPS = function (){
 
     	return ready;
 
-    }
+    };
+
+    this.start = function(){
+    	if(!this.isReady()){
+    		return false;
+    	} else {
+
+    		inProgress = true;
+
+    		return true;
+    	}
+    };
+
+    this.isInProgress = function(){
+    	return inProgress;
+    };
 
 	};
 

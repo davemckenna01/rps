@@ -72,6 +72,25 @@ module.exports = testCase({
 
     },
 
+    "test games should not be allowed to have the same id": function(test) {
+
+        var that = this;
+
+        test.throws(
+          function(){
+            var game1 = new that.rps.Game('abc123');
+            var game2 = new that.rps.Game('abc123');
+          },
+          Error
+        )
+        test.done();
+
+    }
+
+  }),
+
+  "TC 2 - Game.getGames()": testCase({
+
     "test rps should have a getGames() method that returns all games belonging to this rps instance": 
       function(test) {
 
@@ -92,27 +111,11 @@ module.exports = testCase({
 
         test.done();
 
-    },
-
-    "test games should not be allowed to have the same id": function(test) {
-
-        var that = this;
-
-        test.throws(
-          function(){
-            var game1 = new that.rps.Game('abc123');
-            var game2 = new that.rps.Game('abc123');
-          },
-          Error
-        )
-        test.done();
-
     }
 
+  }),  
 
-  }),
-
-  "TC 2 - Game.addPlayer()": testCase({
+  "TC 3 - Game.addPlayer()": testCase({
 
     "test Game has an addPlayer method that accepts 1 Player obj arg": function(test) {
 
@@ -213,7 +216,7 @@ module.exports = testCase({
   
   }),
 
-  "TC 3 - Game.isReady()": testCase({
+  "TC 4 - Game.isReady()": testCase({
 
     "test Game has an isReady method that returns a boolean": function(test) {
         
@@ -272,12 +275,64 @@ module.exports = testCase({
         player1.ready();
         player2.ready();
 
-        test.equal(game.isReady(), true);
+        test.ok(game.isReady());
 
         test.done();
 
     }        
 
-  })
+  }),
+
+  "TC 5 - Game.start()": testCase({
+
+    "test should return false if NOT game.isReady() and true if it isReady()": function(test) {
+        
+        var game = new this.rps.Game('abc123');
+
+        test.equal(game.isReady(), false);
+
+        test.equal(game.start(), false);
+
+        var player1 = new this.rps.Player('p1');
+        var player2 = new this.rps.Player('p2');
+
+        game.addPlayer(player1);
+        game.addPlayer(player2);
+
+        player1.ready();
+        player2.ready();
+
+        test.ok(game.isReady());
+
+        test.ok(game.start());
+
+        test.done();
+
+    },
+
+    "test should set game.inProgress to true if game.isReady()": function(test) {
+        
+        var game = new this.rps.Game('abc123');
+
+        var player1 = new this.rps.Player('p1');
+        var player2 = new this.rps.Player('p2');
+
+        game.addPlayer(player1);
+        game.addPlayer(player2);
+
+        player1.ready();
+        player2.ready();
+
+        test.ok(game.isReady());   
+
+        game.start();
+
+        test.ok(game.isInProgress());
+
+        test.done();
+
+    }    
+
+  })  
 
 });
