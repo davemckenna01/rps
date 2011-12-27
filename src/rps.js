@@ -1,7 +1,7 @@
 var RPS = function (){
 	var that = this;
 
-	var games = []
+	var games = {};
 
 	this.getGames = function(){
 		return games;
@@ -9,18 +9,14 @@ var RPS = function (){
 
 	this.Game = function(id){
 
-    var players = [];
+    var players = {};
 
     var inProgress = false;
 
+    var playerThrows = {};
+
     if (arguments.length <= 0 || typeof arguments[0] != 'string' ){
       throw new Error('Game() takes exactly 1 string arg ');
-    }
-
-    if (/^\d+$/.test(arguments[0])){
-      throw new Error(
-        'Game() Argument can not be a number, must be string or number/string combo'
-      );
     }
     
     if (games.hasOwnProperty(id)){
@@ -80,6 +76,10 @@ var RPS = function (){
 
     		inProgress = true;
 
+    		//re-initializing (clearing) obj to keep track of
+    		//player throws
+    		playerThrows = {};
+
     		return true;
     	}
     };
@@ -87,6 +87,40 @@ var RPS = function (){
     this.isInProgress = function(){
     	return inProgress;
     };
+
+    this.getThrows = function(){
+    	return playerThrows;
+    	
+    };
+
+    this.registerThrow = function(player, throwRPS){
+    	if (!this.isInProgress()){
+    		return false;
+    	}
+
+	    if (arguments.length != 2 || 
+		     ( typeof arguments[0] != 'string' && typeof arguments[1] != 'string' ) ){
+	      
+	      throw new Error('submitThrow() takes exactly 2 string args');
+	    }
+
+	    if (! ( player in this.getPlayers() ) ) {
+	    	throw new Error('That player is not playing in this game.');	
+	    }
+
+	    if (throwRPS != 'r' && throwRPS != 'p' && throwRPS != 's') {
+	    	throw new Error('Must be either an "r", "p", or "s"');	
+	    }	    
+
+	    if (!playerThrows[player]){
+	    	playerThrows[player] = throwRPS;
+			}
+
+  		
+			return true;
+    };
+
+
 
 	};
 
