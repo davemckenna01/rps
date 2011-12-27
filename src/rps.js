@@ -116,10 +116,49 @@ var RPS = function (){
 	    	playerThrows[player] = throwRPS;
 			}
 
-  		
+			//detecting when to 'end' the game. If the second throw
+			//has come in, then we can end it.
+			if (Object.keys(playerThrows).length == 2){
+				inProgress = false;
+				//this.determineWinner();
+			}
+			  		
 			return true;
     };
 
+    this.determineWinner = function(pThrows){
+    	if (arguments.length <= 0){
+    		throw new Error('determineWinner takes exactly 1 arg.');
+    	}
+
+    	if (Object.keys(pThrows).length != 2){
+    		throw new Error('There are not enough throws in this object.');
+    	}
+    	
+    	var p1 = Object.keys(pThrows)[0];
+    	var p1Throw = pThrows[Object.keys(pThrows)[0]];
+    	var p2 = Object.keys(pThrows)[1];
+    	var p2Throw = pThrows[Object.keys(pThrows)[1]];    	
+
+    	switch(p1Throw) {
+    		case 'r':
+    			if (p2Throw == 'r') return false;
+    			if (p2Throw == 'p') return p2;
+    			if (p2Throw == 's')	return p1;
+
+    		case 'p':
+    			if (p2Throw == 'r') return p1;
+    			if (p2Throw == 'p') return false;
+    			if (p2Throw == 's')	return p2;    		
+
+    		case 's':
+    			if (p2Throw == 'r') return p2;
+    			if (p2Throw == 'p') return p1;
+    			if (p2Throw == 's')	return false;    		
+
+    	}
+    	
+    };
 
 
 	};

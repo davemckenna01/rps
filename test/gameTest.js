@@ -504,7 +504,7 @@ module.exports = testCase({
 
     },
     
-    "test only first throw is registered, subsequent attempts per player have no effect": function(test) {    
+    "test only first throw should be registered, subsequent attempts per player have no effect": function(test) {    
         
       var game = new this.rps.Game('abc123');
 
@@ -526,8 +526,120 @@ module.exports = testCase({
 
       test.done();
 
-    }
+    },
 
-  })    
+    "test should detect when the 2nd throw has been registered and reset game.inProgress back to false": function(test) {    
+        
+      var game = new this.rps.Game('abc123');
+
+      var player1 = new this.rps.Player('p1');
+      var player2 = new this.rps.Player('p2');
+
+      game.addPlayer(player1);
+      game.addPlayer(player2);
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 'r');
+      game.registerThrow(player2.getId(), 'p');
+
+      test.equal(game.isInProgress(), false);
+
+      test.done();
+
+    }    
+
+  }),
+  
+  "TC 7 - Game.determineWinner()": testCase({
+
+    "test should accept an object with 2 player props and their throws": function(test) {
+
+      var game = new this.rps.Game('abc123');
+
+      test.throws(
+        function(){
+          game.determineWinner();
+        },
+        Error
+      )
+
+      test.throws(
+        function(){
+          game.determineWinner({
+            foo: 'bar'
+          });
+        },
+        Error
+      )
+      
+      test.doesNotThrow(
+        function(){
+          game.determineWinner({
+            pid123: 'r',
+            pid456: 'p'
+          });
+        },
+        Error
+      )            
+
+      test.done();
+
+    },
+
+    "test r should beat s, s should beat p, and p should beat r, and winning player returned": function(test) {
+
+      var game = new this.rps.Game('abc123');
+
+      var winner = game.determineWinner({
+        pid123: 'r',
+        pid456: 'p'
+      });
+
+      test.equal(winner, 'pid456');
+
+      winner = game.determineWinner({
+        pid123: 's',
+        pid456: 'p'
+      });
+
+      test.equal(winner, 'pid123');
+
+      winner = game.determineWinner({
+        pid123: 's',
+        pid456: 'r'
+      });
+
+      test.equal(winner, 'pid456');
+
+      winner = game.determineWinner({
+        pid123: 'r',
+        pid456: 'r'
+      });
+
+      test.equal(winner, false);      
+
+      winner = game.determineWinner({
+        pid123: 'p',
+        pid456: 'p'
+      });
+
+      test.equal(winner, false);      
+      
+      winner = game.determineWinner({
+        pid123: 's',
+        pid456: 's'
+      });
+
+      test.equal(winner, false);                  
+
+      test.done();
+
+    }    
+    
+  })      
 
 });
