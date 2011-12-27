@@ -3,13 +3,15 @@ var RPS = function (){
 
 	var games = {};
 
+	var players = {}
+
 	this.getGames = function(){
 		return games;
 	};
 
 	this.Game = function(id){
 
-    var players = {};
+    var gamePlayers = {};
 
     var rounds = 0;
 
@@ -43,32 +45,32 @@ var RPS = function (){
 	      throw new Error('addPlayer() takes exactly 1 arg of type Player');
 	    }
 
-	    if (Object.keys(players).length >= 2){
+	    if (Object.keys(gamePlayers).length >= 2){
 	    	throw new Error('Games may take a max of 2 Players');
 	    } else {
-	    	players[player.getId()] = player;
+	    	gamePlayers[player.getId()] = player;
 			}
 
     };
 
     this.getPlayers = function(){
-    	return players;
+    	return gamePlayers;
     };
 
     this.isReady = function(){
 
     	var ready = null;
 
-    	var keys = Object.keys(players);
+    	var keys = Object.keys(gamePlayers);
 
     	if (keys.length < 2) {
     		ready = false;
     	} else if (
-	    	!( players[keys[0]].isReady() && players[keys[1]].isReady() )
+	    	!( gamePlayers[keys[0]].isReady() && gamePlayers[keys[1]].isReady() )
 	    ){
     		ready = false;
     	} else if (
-    		players[keys[0]].isReady() && players[keys[1]].isReady()
+    		gamePlayers[keys[0]].isReady() && gamePlayers[keys[1]].isReady()
     	) {
     		ready = true;
     	}
@@ -139,12 +141,12 @@ var RPS = function (){
 			results = this.determineWinner(playerThrows);
 	
 			if (results == 'tie'){
-				players[Object.keys(players)[0]].updateRecord('ties');
-				players[Object.keys(players)[1]].updateRecord('ties');
+				gamePlayers[Object.keys(gamePlayers)[0]].updateRecord('ties');
+				gamePlayers[Object.keys(gamePlayers)[1]].updateRecord('ties');
 				//return results;
 			} else {
-				players[results['winner']].updateRecord('wins');
-				players[results['loser']].updateRecord('losses');
+				gamePlayers[results['winner']].updateRecord('wins');
+				gamePlayers[results['loser']].updateRecord('losses');
 				//return results['winner'];
 			}
 
@@ -199,11 +201,32 @@ var RPS = function (){
 
     this.again = function(){
     	initGameProps();
-    	players[Object.keys(players)[0]].again();
-			players[Object.keys(players)[1]].again();
+    	gamePlayers[Object.keys(gamePlayers)[0]].again();
+			gamePlayers[Object.keys(gamePlayers)[1]].again();
     };
 
 	};
+
+
+
+
+	this.Player = function(id){
+
+    if (arguments.length <= 0 || typeof arguments[0] != 'string' ){
+      throw new Error('Player() takes exactly 1 string arg ');
+    }
+    
+    if (players.hasOwnProperty(id)){
+      throw new Error('Game IDs must be unique');
+    } else {
+      players[id] = this;
+    }		
+		
+	};
+
+
+
+
 
 };
 
