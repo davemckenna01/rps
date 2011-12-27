@@ -9,9 +9,13 @@ module.exports = testCase({
     this.rps = new rps.RPS();
 
     //Stubbing Player class
-    //this._Player = this.rps.Player;
 
-    this.rps.Player = function(id){
+    //this.rps.Player = function(id){
+    //this.rps.PlayerStub is not actually used, I'm just
+    //naming it that to keep it available (I'll just remove)
+    //the 'Stub' part of the method name if I want to use
+    //the stub
+    this.rps.PlayerStub = function(id){
       this.getId = function(){
         return id;
       };
@@ -50,9 +54,6 @@ module.exports = testCase({
   },
 
   tearDown: function(callback){
-
-    //restoring the Player stub
-    //this.rps.Player = this._Player;
     
     callback();
   },    
@@ -148,7 +149,7 @@ module.exports = testCase({
         Error
       );  
       
-      var player = new this.rps.Player();
+      var player = new this.rps.Player('');
 
       test.doesNotThrow(
         function() {
