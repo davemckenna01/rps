@@ -9,6 +9,10 @@ var RPS = function (){
 		return games;
 	};
 
+	this.getPlayers = function(){
+		return players;
+	};
+
 	this.Game = function(id){
 
     var gamePlayers = {};
@@ -221,6 +225,11 @@ var RPS = function (){
     } else {
       players[id] = this;
     }		
+
+
+    this.getId = function(){
+    	return id;
+    }
 		
 	};
 

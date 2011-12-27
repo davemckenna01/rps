@@ -57,6 +57,31 @@ module.exports = testCase({
 
     }    
 
-  })
+  }),
+
+  "TC 2 - RPS.getPlayers()": testCase({
+
+    "test rps should have a getPlayers() method that returns all players belonging to this rps instance": function(test) {
+
+      test.equal(typeof this.rps.getPlayers(), 'object')
+
+      var player1 = new this.rps.Player('abc123');
+
+      test.equal(typeof this.rps.getPlayers()['abc123'], 'object')
+      test.equal(this.rps.getPlayers()['abc123'].getId(), 'abc123')
+
+      var player1 = new this.rps.Player('abc456');
+
+      test.equal(typeof this.rps.getPlayers()['abc456'], 'object')
+      test.equal(this.rps.getPlayers()['abc456'].getId(), 'abc456')    
+      
+      test.equal(Object.keys(this.rps.getPlayers()).length, 2 );
+
+
+      test.done();
+
+    }
+
+  })  
 
 });
