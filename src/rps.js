@@ -216,6 +216,14 @@ var RPS = function (){
 
 	this.Player = function(id){
 
+		var ready = false;
+
+    var record = {
+      'wins': 0,
+      'losses': 0,
+      'ties': 0
+    }
+
     if (arguments.length <= 0 || typeof arguments[0] != 'string' ){
       throw new Error('Player() takes exactly 1 string arg ');
     }
@@ -226,14 +234,31 @@ var RPS = function (){
       players[id] = this;
     }		
 
-
     this.getId = function(){
     	return id;
-    }
+    };
+
+    this.isReady = function(){
+    	return ready;
+    };
+
+    this.ready = function(){
+    	ready = true;
+    };
+
+    this.getRecord = function(){
+    	return record;
+    };
+
+    this.updateRecord = function(type){
+      record[type]++;
+    };    
+
+    this.again = function(){
+      ready = false;
+    };    
 		
 	};
-
-
 
 
 
