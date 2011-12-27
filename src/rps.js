@@ -138,12 +138,14 @@ var RPS = function (){
 			inProgress = false;
 			results = this.determineWinner(playerThrows);
 	
-			if (results === false){
+			if (results == 'tie'){
 				players[Object.keys(players)[0]].updateRecord('ties');
 				players[Object.keys(players)[1]].updateRecord('ties');
+				//return results;
 			} else {
 				players[results['winner']].updateRecord('wins');
 				players[results['loser']].updateRecord('losses');
+				//return results['winner'];
 			}
 
 			rounds++;    	
@@ -169,19 +171,19 @@ var RPS = function (){
 
     	switch(p1Throw) {
     		case 'r':
-    			if (p2Throw == 'r') return false;
+    			if (p2Throw == 'r') return 'tie';
     			if (p2Throw == 'p') return {winner: p2, loser: p1};
     			if (p2Throw == 's')	return {winner: p1, loser: p2};
 
     		case 'p':
     			if (p2Throw == 'r') return {winner: p1, loser: p2};
-    			if (p2Throw == 'p') return false;
+    			if (p2Throw == 'p') return 'tie';
     			if (p2Throw == 's')	return {winner: p2, loser: p1};    		
 
     		case 's':
     			if (p2Throw == 'r') return {winner: p2, loser: p1};
     			if (p2Throw == 'p') return {winner: p1, loser: p2};
-    			if (p2Throw == 's')	return false;    		
+    			if (p2Throw == 's')	return 'tie';    		
 
     	}
     	
@@ -195,6 +197,11 @@ var RPS = function (){
     	return results;
     };
 
+    this.again = function(){
+    	initGameProps();
+    	players[Object.keys(players)[0]].again();
+			players[Object.keys(players)[1]].again();
+    };
 
 	};
 

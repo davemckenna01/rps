@@ -38,7 +38,11 @@ module.exports = testCase({
       
       this.updateRecord = function(type){
         record[type]++;
-      }
+      };
+
+      this.again = function(){
+        ready = false;
+      };
 
     };    
 
@@ -610,21 +614,21 @@ module.exports = testCase({
         pid456: 'r'
       });
 
-      test.equal(results, false);      
+      test.equal(results, 'tie');      
 
       results = game.determineWinner({
         pid123: 'p',
         pid456: 'p'
       });
 
-      test.equal(results, false);      
+      test.equal(results, 'tie');      
       
       results = game.determineWinner({
         pid123: 's',
         pid456: 's'
       });
 
-      test.equal(results, false);                  
+      test.equal(results, 'tie');                  
 
       test.done();
 
@@ -754,9 +758,147 @@ module.exports = testCase({
 
       test.done();
 
-    },            
+    }
 
+  }),
 
-  })
+  "TC 9 - Game.again()": testCase({
+
+    "test should reset game state to play again": function(test) {    
+        
+      var game = new this.rps.Game('abc123');
+
+      var player1 = new this.rps.Player('p1');
+      var player2 = new this.rps.Player('p2');
+
+      game.addPlayer(player1);
+      game.addPlayer(player2);
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 'r');
+      game.registerThrow(player2.getId(), 'p');
+
+      game.again();
+
+      test.equal(game.isInProgress(), false);
+      test.equal(Object.keys(game.getThrows()).length, 0);
+      test.equal(Object.keys(game.getResults()).length, 0);
+
+      test.done();
+
+    },
+
+    "test should put players in a ready state for a new game": function(test) {    
+        
+      var game = new this.rps.Game('abc123');
+
+      var player1 = new this.rps.Player('p1');
+      var player2 = new this.rps.Player('p2');
+
+      game.addPlayer(player1);
+      game.addPlayer(player2);
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 'r');
+      game.registerThrow(player2.getId(), 'p');
+
+      game.again();
+
+      test.equal(player1.isReady(), false);
+      test.equal(player2.isReady(), false);
+
+      test.done();
+
+    },
+    
+    "test should be able to play more than 1 round": function(test) {    
+        
+      var game = new this.rps.Game('abc123');
+
+      var player1 = new this.rps.Player('p1');
+      var player2 = new this.rps.Player('p2');
+
+      game.addPlayer(player1);
+      game.addPlayer(player2);
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 's');
+      game.registerThrow(player2.getId(), 'p');
+
+      test.equal(player1.getRecord()['wins'], 1);  
+      test.equal(player1.getRecord()['losses'], 0);  
+      test.equal(player1.getRecord()['ties'], 0);  
+      test.equal(player2.getRecord()['wins'], 0);  
+      test.equal(player2.getRecord()['losses'], 1);  
+      test.equal(player2.getRecord()['ties'], 0);  
+      
+      game.again();    
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 's');
+      game.registerThrow(player2.getId(), 'p');
+
+      test.equal(player1.getRecord()['wins'], 2);  
+      test.equal(player1.getRecord()['losses'], 0);  
+      test.equal(player1.getRecord()['ties'], 0);  
+      test.equal(player2.getRecord()['wins'], 0);  
+      test.equal(player2.getRecord()['losses'], 2);  
+      test.equal(player2.getRecord()['ties'], 0); 
+      
+      game.again();    
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 's');
+      game.registerThrow(player2.getId(), 'r');
+
+      test.equal(player1.getRecord()['wins'], 2);  
+      test.equal(player1.getRecord()['losses'], 1);  
+      test.equal(player1.getRecord()['ties'], 0);  
+      test.equal(player2.getRecord()['wins'], 1);  
+      test.equal(player2.getRecord()['losses'], 2);  
+      test.equal(player2.getRecord()['ties'], 0);           
+
+      game.again();    
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 'p');
+      game.registerThrow(player2.getId(), 'p');
+
+      test.equal(player1.getRecord()['wins'], 2);  
+      test.equal(player1.getRecord()['losses'], 1);  
+      test.equal(player1.getRecord()['ties'], 1);  
+      test.equal(player2.getRecord()['wins'], 1);  
+      test.equal(player2.getRecord()['losses'], 2);  
+      test.equal(player2.getRecord()['ties'], 1);                 
+
+      test.done();
+
+    }        
+    
+  })  
 
 });
