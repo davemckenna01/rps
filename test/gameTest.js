@@ -18,14 +18,28 @@ module.exports = testCase({
 
       var ready = false;
 
+      var record = {
+        'wins': 0,
+        'losses': 0,
+        'ties': 0
+      }
+
       this.ready = function(){
         ready = true;
       };
 
       this.isReady = function(){
         return ready;
-      }
+      };
+
+      this.getRecord = function(){
+        return record;
+      };
       
+      this.updateRecord = function(type){
+        record[type]++;
+      }
+
     };    
 
     callback();
@@ -526,31 +540,7 @@ module.exports = testCase({
 
       test.done();
 
-    },
-
-    "test should detect when the 2nd throw has been registered and reset game.inProgress back to false": function(test) {    
-        
-      var game = new this.rps.Game('abc123');
-
-      var player1 = new this.rps.Player('p1');
-      var player2 = new this.rps.Player('p2');
-
-      game.addPlayer(player1);
-      game.addPlayer(player2);
-
-      player1.ready();
-      player2.ready();
-
-      game.start();
-      
-      game.registerThrow(player1.getId(), 'r');
-      game.registerThrow(player2.getId(), 'p');
-
-      test.equal(game.isInProgress(), false);
-
-      test.done();
-
-    }    
+    }  
 
   }),
   
@@ -594,52 +584,179 @@ module.exports = testCase({
 
       var game = new this.rps.Game('abc123');
 
-      var winner = game.determineWinner({
+      var results = game.determineWinner({
         pid123: 'r',
         pid456: 'p'
       });
 
-      test.equal(winner, 'pid456');
+      test.equal(results['winner'], 'pid456');
 
-      winner = game.determineWinner({
+      results = game.determineWinner({
         pid123: 's',
         pid456: 'p'
       });
 
-      test.equal(winner, 'pid123');
+      test.equal(results['winner'], 'pid123');
 
-      winner = game.determineWinner({
+      results = game.determineWinner({
         pid123: 's',
         pid456: 'r'
       });
 
-      test.equal(winner, 'pid456');
+      test.equal(results['winner'], 'pid456');
 
-      winner = game.determineWinner({
+      results = game.determineWinner({
         pid123: 'r',
         pid456: 'r'
       });
 
-      test.equal(winner, false);      
+      test.equal(results, false);      
 
-      winner = game.determineWinner({
+      results = game.determineWinner({
         pid123: 'p',
         pid456: 'p'
       });
 
-      test.equal(winner, false);      
+      test.equal(results, false);      
       
-      winner = game.determineWinner({
+      results = game.determineWinner({
         pid123: 's',
         pid456: 's'
       });
 
-      test.equal(winner, false);                  
+      test.equal(results, false);                  
 
       test.done();
 
     }    
     
-  })      
+  }),
+
+  "TC 8 - Game.roundOver(), called when 2nd throw has been registered ... ": testCase({
+
+    "test should reset game.inProgress back to false": function(test) {    
+        
+      var game = new this.rps.Game('abc123');
+
+      var player1 = new this.rps.Player('p1');
+      var player2 = new this.rps.Player('p2');
+
+      game.addPlayer(player1);
+      game.addPlayer(player2);
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 'r');
+      game.registerThrow(player2.getId(), 'p');
+
+      test.equal(game.isInProgress(), false);
+
+      test.done();
+
+    },
+
+    "test should calculate the winner and set game.results": function(test) {    
+        
+      var game = new this.rps.Game('abc123');
+
+      var player1 = new this.rps.Player('p1');
+      var player2 = new this.rps.Player('p2');
+
+      game.addPlayer(player1);
+      game.addPlayer(player2);
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 'r');
+      game.registerThrow(player2.getId(), 'p');
+
+      test.equal(game.getResults()['winner'], player2.getId());
+
+      test.done();
+
+    }, 
+    
+    "test should increment game.rounds": function(test) {    
+        
+      var game = new this.rps.Game('abc123');
+
+      var player1 = new this.rps.Player('p1');
+      var player2 = new this.rps.Player('p2');
+
+      game.addPlayer(player1);
+      game.addPlayer(player2);
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 'r');
+      game.registerThrow(player2.getId(), 'p');
+
+      test.equal(game.getRounds(), 1);  
+
+      test.done();
+
+    },        
+
+    "test should update player record with wins and losses": function(test) {    
+        
+      var game = new this.rps.Game('abc123');
+
+      var player1 = new this.rps.Player('p1');
+      var player2 = new this.rps.Player('p2');
+
+      game.addPlayer(player1);
+      game.addPlayer(player2);
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 'r');
+      game.registerThrow(player2.getId(), 'p');
+
+      test.equal(player1.getRecord()['losses'], 1);  
+      test.equal(player2.getRecord()['wins'], 1);  
+      
+      test.done();
+
+    },        
+
+    "test should update player record with ties": function(test) {    
+        
+      var game = new this.rps.Game('abc123');
+
+      var player1 = new this.rps.Player('p1');
+      var player2 = new this.rps.Player('p2');
+
+      game.addPlayer(player1);
+      game.addPlayer(player2);
+
+      player1.ready();
+      player2.ready();
+
+      game.start();
+      
+      game.registerThrow(player1.getId(), 'r');
+      game.registerThrow(player2.getId(), 'r');
+
+      test.equal(player1.getRecord()['ties'], 1);  
+      test.equal(player2.getRecord()['ties'], 1);  
+
+      test.done();
+
+    },            
+
+
+  })
 
 });

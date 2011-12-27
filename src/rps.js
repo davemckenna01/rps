@@ -11,9 +11,17 @@ var RPS = function (){
 
     var players = {};
 
-    var inProgress = false;
+    var rounds = 0;
 
-    var playerThrows = {};
+    var inProgress, playerThrows, results;
+
+    function initGameProps(){
+	    inProgress = false;
+	    playerThrows = {};
+			results = {};
+    }
+
+		initGameProps();
 
     if (arguments.length <= 0 || typeof arguments[0] != 'string' ){
       throw new Error('Game() takes exactly 1 string arg ');
@@ -117,14 +125,33 @@ var RPS = function (){
 			}
 
 			//detecting when to 'end' the game. If the second throw
-			//has come in, then we can end it.
+			//has come in, then we can end it, i.e. the round is over.
 			if (Object.keys(playerThrows).length == 2){
-				inProgress = false;
-				//this.determineWinner();
+				this.roundOver();
 			}
 			  		
 			return true;
     };
+
+    //should be private!!!!!!!!
+    this.roundOver = function(){
+			inProgress = false;
+			results = this.determineWinner(playerThrows);
+	
+			if (results === false){
+				players[Object.keys(players)[0]].updateRecord('ties');
+				players[Object.keys(players)[1]].updateRecord('ties');
+			} else {
+				players[results['winner']].updateRecord('wins');
+				players[results['loser']].updateRecord('losses');
+			}
+
+			rounds++;    	
+    };
+
+    this.getWinner = function(){
+    	return winner;
+    }
 
     this.determineWinner = function(pThrows){
     	if (arguments.length <= 0){
@@ -143,21 +170,29 @@ var RPS = function (){
     	switch(p1Throw) {
     		case 'r':
     			if (p2Throw == 'r') return false;
-    			if (p2Throw == 'p') return p2;
-    			if (p2Throw == 's')	return p1;
+    			if (p2Throw == 'p') return {winner: p2, loser: p1};
+    			if (p2Throw == 's')	return {winner: p1, loser: p2};
 
     		case 'p':
-    			if (p2Throw == 'r') return p1;
+    			if (p2Throw == 'r') return {winner: p1, loser: p2};
     			if (p2Throw == 'p') return false;
-    			if (p2Throw == 's')	return p2;    		
+    			if (p2Throw == 's')	return {winner: p2, loser: p1};    		
 
     		case 's':
-    			if (p2Throw == 'r') return p2;
-    			if (p2Throw == 'p') return p1;
+    			if (p2Throw == 'r') return {winner: p2, loser: p1};
+    			if (p2Throw == 'p') return {winner: p1, loser: p2};
     			if (p2Throw == 's')	return false;    		
 
     	}
     	
+    };
+
+    this.getRounds = function(){
+    	return rounds;
+    }
+
+    this.getResults = function(){
+    	return results;
     };
 
 
