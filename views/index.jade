@@ -12,4 +12,6 @@ a#createGame(href='#', title='Create Game') Create Game
 append scripts
 
 script
-	rps.initCreateBtn();
+	var rps = new RPS();
+	var homePage = new rps.HomePage();
+	homePage.initCreateBtn();
