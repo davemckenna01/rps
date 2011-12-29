@@ -10,7 +10,6 @@ module.exports = testCase({
 
     //Stubbing Player class
 
-    //this.rps.Player = function(id){
     //this.rps.PlayerStub is not actually used, I'm just
     //naming it that to keep it available (I'll just remove)
     //the 'Stub' part of the method name if I want to use
