@@ -18,11 +18,15 @@ module.exports = testCase({
 
 	"TC 1 RPSInstance()": testCase({
 
-		"should create an object that will manage games and players": function(test) {
+		"should return a unique object": function(test) {
 
 			var rps = new this.RPS.RPSInstance();
 
 			test.equal(typeof rps, 'object')
+
+			var rps2 = new this.RPS.RPSInstance();
+
+			test.notStrictEqual(rps, rps2)
 
 			test.done();
 
