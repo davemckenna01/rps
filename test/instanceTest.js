@@ -71,37 +71,6 @@ module.exports = testCase({
 
 		}    
 
-	}),  
-
-	"TC 3 RPSInstance.getGames()": testCase({
-
-		"should return all games belonging to an instance": function(test) {
-
-			var rps = new this.RPS.RPSInstance();
-
-			var id = 'abc123';
-
-			rps.addGame(id, {'foo': 'bar'});
-
-			test.equal(rps.getGames()[id].foo, 'bar');
-
-			rps.addGame('abc456', {'foo': 'bar'});
-
-			test.equal(Object.keys(rps.getGames()).length, 2);			
-
-			test.done();
-
-		}
-	}),	
-
-	"TC 4 RPSInstance. ??": testCase({
-
-		"...": function(test) {
-
-			test.done();
-
-		}
-
-	})  	
+	})
 
 });
