@@ -59,14 +59,6 @@ module.exports = testCase({
 
   "TC 1 - Game() - constructor": testCase({
 
-    "test rps has a Game constructor": function(test) {
-
-      test.equal(typeof this.rps.Game, 'function');
-
-      test.done();
-
-    },
-
     "test constructor must take 1 arg, a game id": function(test) {
 
       var that = this;
