@@ -117,14 +117,14 @@ var RPS = function () {
             //has come in, then we can end it, i.e. the round is over.
             if (Object.keys(playerThrows).length === 2) {
                 //This smells funny
-                this.roundOver();
+                this.endRound();
             }
 
             return true;
         };
 
         //This smells funny
-        this.roundOver = function () {
+        this.endRound = function () {
             inProgress = false;
             results = this.determineWinner(playerThrows);
 

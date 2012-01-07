@@ -568,7 +568,7 @@ module.exports = testCase({
     
   }),
 
-  "TC 7 - Game.roundOver(), called when 2nd throw has been registered.": testCase({
+  "TC 7 - Game.endRound(), called when 2nd throw has been registered.": testCase({
 
     "test should reset game.inProgress back to false": function(test) {    
         
