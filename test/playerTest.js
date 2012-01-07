@@ -19,15 +19,7 @@ module.exports = testCase({
 
   "TC 1 - Player() - constructor": testCase({
 
-    "test rps has a Player constructor": function(test) {
-
-      test.equal(typeof this.rps.Player, 'function');
-
-      test.done();
-
-    },
-
-    "test should take 1 string arg": function(test) {
+    "test should take 1 string arg, a player id unique to this RPS instance": function(test) {
 
       var that = this;
 
@@ -38,14 +30,6 @@ module.exports = testCase({
         Error
       );  
 
-      test.done();
-
-    },
-
-    "test players should not be allowed to have the same id": function(test) {
-
-      var that = this;
-
       test.throws(
         function(){
           var player1 = new that.rps.Player('abc123');
@@ -55,52 +39,11 @@ module.exports = testCase({
       )
       test.done();
 
-    }    
-
-  }),
-
-  "TC 2 - RPS.getPlayers()": testCase({
-
-    "test rps should have a getPlayers() method that returns all players belonging to this rps instance": function(test) {
-
-      test.equal(typeof this.rps.getPlayers(), 'object')
-
-      var player1 = new this.rps.Player('abc123');
-
-      test.equal(typeof this.rps.getPlayers()['abc123'], 'object')
-      test.equal(this.rps.getPlayers()['abc123'].getId(), 'abc123')
-
-      var player1 = new this.rps.Player('abc456');
-
-      test.equal(typeof this.rps.getPlayers()['abc456'], 'object')
-      test.equal(this.rps.getPlayers()['abc456'].getId(), 'abc456')    
-      
-      test.equal(Object.keys(this.rps.getPlayers()).length, 2 );
-
-
-      test.done();
-
     }
 
   }),
 
-  "TC 3 - Player.isReady()": testCase({
-
-    "test should return a boolean for the player's ready state": function(test) {
-
-      var player = new this.rps.Player('abc123');
-
-      test.equal(typeof player.isReady, 'function');
-
-      test.equal(typeof player.isReady(), 'boolean');
-
-      test.done();
-
-    }
-
-  }),
-
-  "TC 4 - Player.ready()": testCase({
+  "TC 2 - Player.ready()": testCase({
 
     "test should set player.ready to true": function(test) {
 
@@ -116,23 +59,7 @@ module.exports = testCase({
 
   }),
 
-  "TC 5 - Player.getRecord()": testCase({
-
-    "test should return a record object with props 'wins', 'losses', and 'ties'": function(test) {
-
-      var player = new this.rps.Player('abc123');
-
-      test.equal(player.getRecord()['wins'], 0);
-      test.equal(player.getRecord()['losses'], 0);
-      test.equal(player.getRecord()['ties'], 0);
-
-      test.done();
-
-    }        
-
-  }),
-
-  "TC 6 - Player.updateRecord()": testCase({
+  "TC 3 - Player.updateRecord()": testCase({
 
     "test should accept a record type arg and increment it by 1": function(test) {
 
@@ -158,7 +85,7 @@ module.exports = testCase({
 
   }),
   
-  "TC 7 - Player.again()": testCase({
+  "TC 4 - Player.again()": testCase({
 
     "test should reset player.ready back to false": function(test) {
 

@@ -5,14 +5,6 @@ var RPS = function () {
         games = {},
         players = {};
 
-    this.getGames = function () {
-        return games;
-    };
-
-    this.getPlayers = function () {
-        return players;
-    };
-
     this.Game = function (id) {
         var gamePlayers = {},
             rounds = 0,
@@ -45,6 +37,11 @@ var RPS = function () {
         this.addPlayer = function (player) {
             if (arguments.length <= 0 || !(player instanceof that.Player)) {
                 throw new Error('addPlayer() takes exactly 1 arg of type Player');
+            }
+
+            //NO TEST YET!
+            if (gamePlayers.hasOwnProperty(player.getId())) {
+                throw new Error('This player is in the game already.');
             }
 
             if (Object.keys(gamePlayers).length >= 2) {
@@ -119,13 +116,14 @@ var RPS = function () {
             //detecting when to 'end' the game. If the second throw
             //has come in, then we can end it, i.e. the round is over.
             if (Object.keys(playerThrows).length === 2) {
+                //This smells funny
                 this.roundOver();
             }
 
             return true;
         };
 
-        //should be private!!!!!!!!
+        //This smells funny
         this.roundOver = function () {
             inProgress = false;
             results = this.determineWinner(playerThrows);
@@ -206,7 +204,7 @@ var RPS = function () {
         }
 
         if (players.hasOwnProperty(id)) {
-            throw new Error('Game IDs must be unique');
+            throw new Error('Player IDs must be unique');
         } else {
             players[id] = this;
         }

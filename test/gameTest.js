@@ -59,7 +59,7 @@ module.exports = testCase({
 
   "TC 1 - Game() - constructor": testCase({
 
-    "test constructor must take 1 arg, a game id": function(test) {
+    "test constructor must take 1 arg, a game id unique to this RPS instance": function(test) {
 
       var that = this;
 
@@ -70,53 +70,21 @@ module.exports = testCase({
         Error
       );  
 
-      test.done();
-
-    },
-
-    "test games should not be allowed to have the same id": function(test) {
-
-      var that = this;
-
       test.throws(
         function(){
           var game1 = new that.rps.Game('abc123');
           var game2 = new that.rps.Game('abc123');
         },
         Error
-      )
-      test.done();
-
-    }
-
-  }),
-
-  "TC 2 - Game.getGames()": testCase({
-
-    "test rps should have a getGames() method that returns all games belonging to this rps instance": function(test) {
-
-      test.equal(typeof this.rps.getGames(), 'object')
-
-      var game1 = new this.rps.Game('abc123');
-
-      test.equal(typeof this.rps.getGames()['abc123'], 'object')
-      test.equal(this.rps.getGames()['abc123'].getId(), 'abc123')
-
-      var game2 = new this.rps.Game('abc456');
-
-      test.equal(typeof this.rps.getGames()['abc456'], 'object')
-      test.equal(this.rps.getGames()['abc456'].getId(), 'abc456')       
-      
-      test.equal(Object.keys(this.rps.getGames()).length, 2 );
-
+      )      
 
       test.done();
 
     }
 
-  }),  
+  }), 
 
-  "TC 3 - Game.addPlayer()": testCase({
+  "TC 2 - Game.addPlayer()": testCase({
 
     "test Game has an addPlayer method that accepts 1 Player obj arg": function(test) {
 
@@ -215,7 +183,7 @@ module.exports = testCase({
   
   }),
 
-  "TC 4 - Game.isReady()": testCase({
+  "TC 3 - Game.isReady()": testCase({
 
     "test Game has an isReady method that returns a boolean": function(test) {
         
@@ -282,7 +250,7 @@ module.exports = testCase({
 
   }),
 
-  "TC 5 - Game.start()": testCase({
+  "TC 4 - Game.start()": testCase({
 
     "test should return false if NOT game.isReady() and true if it isReady()": function(test) {
         
@@ -356,7 +324,7 @@ module.exports = testCase({
 
   }),
   
-  "TC 6 - Game.registerThrow()": testCase({
+  "TC 5 - Game.registerThrow()": testCase({
 
     "test should only execute (i.e. return true) if game.isInProgress": function(test) {
 
@@ -512,7 +480,7 @@ module.exports = testCase({
 
   }),
   
-  "TC 7 - Game.determineWinner()": testCase({
+  "TC 6 - Game.determineWinner()": testCase({
 
     "test should accept an object with 2 player props and their throws": function(test) {
 
@@ -600,7 +568,7 @@ module.exports = testCase({
     
   }),
 
-  "TC 8 - Game.roundOver(), called when 2nd throw has been registered.": testCase({
+  "TC 7 - Game.roundOver(), called when 2nd throw has been registered.": testCase({
 
     "test should reset game.inProgress back to false": function(test) {    
         
@@ -726,7 +694,7 @@ module.exports = testCase({
 
   }),
 
-  "TC 9 - Game.again()": testCase({
+  "TC 8 - Game.again()": testCase({
 
     "test should reset game state to play again": function(test) {    
         
