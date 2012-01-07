@@ -122,8 +122,6 @@ module.exports = testCase({
 
       var game = new this.rps.Game('abc123');
 
-      test.equal(typeof game.addPlayer, 'function');
-
       var that = this;
 
       test.throws(
@@ -349,8 +347,8 @@ module.exports = testCase({
 
       game.start();
 
-      test.equal(typeof game.getThrows(), 'object')
-      test.equal(Object.keys(game.getThrows()), 0)
+      test.equal(typeof game.getPlayerThrows(), 'object')
+      test.equal(Object.keys(game.getPlayerThrows()).length, 0)
 
       test.done();
 
@@ -360,11 +358,9 @@ module.exports = testCase({
   
   "TC 6 - Game.registerThrow()": testCase({
 
-    "test should only execute if game.isInProgress": function(test) {
+    "test should only execute (i.e. return true) if game.isInProgress": function(test) {
 
       var game = new this.rps.Game('abc123');
-
-      test.equal(typeof game.registerThrow, 'function');
 
       test.equal(game.registerThrow(), false);
 
@@ -385,7 +381,7 @@ module.exports = testCase({
 
     },
 
-    "test should accept 2 args, a player ID and an R, P, or S, both strings": function(test) {
+    "test should accept 2 args, an existing player ID and an 'r', 'p', or 's', both strings": function(test) {
 
       var game = new this.rps.Game('abc123');
 
@@ -414,6 +410,34 @@ module.exports = testCase({
         Error
       );        
 
+      test.throws(
+        function(){
+          game.registerThrow('', '');
+        },
+        Error
+      );              
+
+      test.throws(
+        function(){
+          game.registerThrow('', 'r');
+        },
+        Error
+      );                    
+
+      test.throws(
+        function(){
+          game.registerThrow('p99', 'r');
+        },
+        Error
+      );                         
+      
+      test.throws(
+        function(){
+          game.registerThrow('p1', 'z');
+        },
+        Error
+      );                                
+
       test.doesNotThrow(
           function(){
           game.registerThrow('p1', 'r');
@@ -421,76 +445,24 @@ module.exports = testCase({
         Error
       );                
 
+      test.doesNotThrow(
+          function(){
+          game.registerThrow('p1', 'p');
+        },
+        Error
+      );                      
+
+      test.doesNotThrow(
+          function(){
+          game.registerThrow('p1', 's');
+        },
+        Error
+      );                            
+
       test.done();
 
     },
     
-    "test 1st arg must be the id of a player belonging to this game instance": function(test) {
-
-      var game = new this.rps.Game('abc123');
-
-      var player1 = new this.rps.Player('p1');
-      var player2 = new this.rps.Player('p2');
-
-      game.addPlayer(player1);
-      game.addPlayer(player2);
-
-      player1.ready();
-      player2.ready();
-
-      game.start();
-
-      test.throws(
-        function(){
-          game.registerThrow('p3', 'r')
-        },
-        Error
-      );
-
-      test.doesNotThrow(
-        function(){
-          game.registerThrow('p2', 'r')
-        },
-        Error
-      );      
-        
-      test.done();
-
-    },
-    
-    "test 2nd arg must be an r, p, or s": function(test) {
-
-      var game = new this.rps.Game('abc123');
-
-      var player1 = new this.rps.Player('p1');
-      var player2 = new this.rps.Player('p2');
-
-      game.addPlayer(player1);
-      game.addPlayer(player2);
-
-      player1.ready();
-      player2.ready();
-
-      game.start();
-
-      test.throws(
-        function(){
-          game.registerThrow('p2', 'a');
-        },
-        Error
-      );
-
-      test.doesNotThrow(
-        function(){
-          game.registerThrow('p2', 'r');
-        },
-        Error
-      );      
-        
-      test.done();
-
-    },
-
     "test should update game.playerThrows": function(test) {    
         
       var game = new this.rps.Game('abc123');
@@ -508,7 +480,7 @@ module.exports = testCase({
       
       game.registerThrow(player1.getId(), 'r');
 
-      test.ok(player1.getId() in game.getThrows());
+      test.ok(game.getPlayerThrows().hasOwnProperty(player1.getId()));
 
       test.done();
 
@@ -532,7 +504,7 @@ module.exports = testCase({
       game.registerThrow(player1.getId(), 'r');
       game.registerThrow(player1.getId(), 'p');
 
-      test.equal(game.getThrows()[player1.getId()], 'r');
+      test.equal(game.getPlayerThrows()[player1.getId()], 'r');
 
       test.done();
 
@@ -628,7 +600,7 @@ module.exports = testCase({
     
   }),
 
-  "TC 8 - Game.roundOver(), called when 2nd throw has been registered ... ": testCase({
+  "TC 8 - Game.roundOver(), called when 2nd throw has been registered.": testCase({
 
     "test should reset game.inProgress back to false": function(test) {    
         
@@ -777,7 +749,7 @@ module.exports = testCase({
       game.again();
 
       test.equal(game.isInProgress(), false);
-      test.equal(Object.keys(game.getThrows()).length, 0);
+      test.equal(Object.keys(game.getPlayerThrows()).length, 0);
       test.equal(Object.keys(game.getResults()).length, 0);
 
       test.done();

@@ -91,7 +91,7 @@ var RPS = function () {
             return inProgress;
         };
 
-        this.getThrows = function () {
+        this.getPlayerThrows = function () {
             return playerThrows;
         };
 
@@ -137,7 +137,6 @@ var RPS = function () {
             } else {
                 gamePlayers[results.winner].updateRecord('wins');
                 gamePlayers[results.loser].updateRecord('losses');
-                //return results['winner'];
             }
 
             rounds += 1;
