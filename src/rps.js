@@ -1,4 +1,6 @@
 var RPS = function () {
+    'use strict';
+
     var that = this,
         games = {},
         players = {};
@@ -26,10 +28,10 @@ var RPS = function () {
 
         initGameProps();
 
-        if (arguments.length <= 0 || typeof id !== 'string' ) {
-            throw new Error('Game() takes exactly 1 string arg ');
+        if (arguments.length <= 0 || typeof id !== 'string') {
+            throw new Error('Game() takes exactly 1 string arg');
         }
-        
+
         if (games.hasOwnProperty(id)) {
             throw new Error('Game IDs must be unique');
         } else {
@@ -41,8 +43,8 @@ var RPS = function () {
         };
 
         this.addPlayer = function (player) {
-            if (arguments.length <= 0 || !(arguments[0] instanceof that.Player) ) {
-              throw new Error('addPlayer() takes exactly 1 arg of type Player');
+            if (arguments.length <= 0 || !(player instanceof that.Player)) {
+                throw new Error('addPlayer() takes exactly 1 arg of type Player');
             }
 
             if (Object.keys(gamePlayers).length >= 2) {
@@ -57,28 +59,22 @@ var RPS = function () {
         };
 
         this.isReady = function () {
-            var ready = null;
-
-            var keys = Object.keys(gamePlayers);
+            var ready = null,
+                keys = Object.keys(gamePlayers);
 
             if (keys.length < 2) {
                 ready = false;
-            } else if (
-                !( gamePlayers[keys[0]].isReady() && gamePlayers[keys[1]].isReady() )
-            ) {
+            } else if (!(gamePlayers[keys[0]].isReady() && gamePlayers[keys[1]].isReady())) {
                 ready = false;
-            } else if (
-                gamePlayers[keys[0]].isReady() && gamePlayers[keys[1]].isReady()
-            ) {
+            } else if (gamePlayers[keys[0]].isReady() && gamePlayers[keys[1]].isReady()) {
                 ready = true;
             }
 
             return ready;
-
         };
 
         this.start = function () {
-            if(!this.isReady()) {
+            if (!this.isReady()) {
                 return false;
             } else {
                 inProgress = true;
@@ -97,7 +93,6 @@ var RPS = function () {
 
         this.getThrows = function () {
             return playerThrows;
-            
         };
 
         this.registerThrow = function (player, throwRPS) {
@@ -105,19 +100,17 @@ var RPS = function () {
                 return false;
             }
 
-            if (arguments.length !== 2 || 
-                 ( typeof arguments[0] !== 'string' && typeof arguments[1] !== 'string' ) ) {
-              
-              throw new Error('submitThrow() takes exactly 2 string args');
+            if (arguments.length !== 2 || (typeof player !== 'string' && typeof throwRPS !== 'string')) {
+                throw new Error('submitThrow() takes exactly 2 string args');
             }
 
-            if (! ( player in this.getPlayers() ) ) {
-                throw new Error('That player is not playing in this game.');    
+            if (!(this.getPlayers().hasOwnProperty(player))) {
+                throw new Error('That player is not playing in this game.');
             }
 
             if (throwRPS !== 'r' && throwRPS !== 'p' && throwRPS !== 's') {
-                throw new Error('Must be either an "r", "p", or "s"');  
-            }       
+                throw new Error('Must be either an "r", "p", or "s"');
+            }
 
             if (!playerThrows[player]) {
                 playerThrows[player] = throwRPS;
@@ -128,7 +121,7 @@ var RPS = function () {
             if (Object.keys(playerThrows).length === 2) {
                 this.roundOver();
             }
-                    
+
             return true;
         };
 
@@ -142,19 +135,20 @@ var RPS = function () {
                 gamePlayers[Object.keys(gamePlayers)[1]].updateRecord('ties');
                 //return results;
             } else {
-                gamePlayers[results['winner']].updateRecord('wins');
-                gamePlayers[results['loser']].updateRecord('losses');
+                gamePlayers[results.winner].updateRecord('wins');
+                gamePlayers[results.loser].updateRecord('losses');
                 //return results['winner'];
             }
 
-            rounds++;       
+            rounds += 1;
         };
 
-        this.getWinner = function () {
-            return winner;
-        }
-
         this.determineWinner = function (pThrows) {
+            var p1 = Object.keys(pThrows)[0],
+                p1Throw = pThrows[Object.keys(pThrows)[0]],
+                p2 = Object.keys(pThrows)[1],
+                p2Throw = pThrows[Object.keys(pThrows)[1]];
+
             if (arguments.length <= 0) {
                 throw new Error('determineWinner takes exactly 1 arg.');
             }
@@ -162,35 +156,32 @@ var RPS = function () {
             if (Object.keys(pThrows).length !== 2) {
                 throw new Error('There are not enough throws in this object.');
             }
-            
-            var p1 = Object.keys(pThrows)[0];
-            var p1Throw = pThrows[Object.keys(pThrows)[0]];
-            var p2 = Object.keys(pThrows)[1];
-            var p2Throw = pThrows[Object.keys(pThrows)[1]];     
 
-            switch(p1Throw) {
-                case 'r':
-                    if (p2Throw === 'r') return 'tie';
-                    if (p2Throw === 'p') return {winner: p2, loser: p1};
-                    if (p2Throw === 's') return {winner: p1, loser: p2};
+            switch (p1Throw) {
+            case 'r':
+                if (p2Throw === 'r') {return 'tie'; }
+                if (p2Throw === 'p') {return {winner: p2, loser: p1}; }
+                if (p2Throw === 's') {return {winner: p1, loser: p2}; }
+                break;
 
-                case 'p':
-                    if (p2Throw === 'r') return {winner: p1, loser: p2};
-                    if (p2Throw === 'p') return 'tie';
-                    if (p2Throw === 's') return {winner: p2, loser: p1};         
+            case 'p':
+                if (p2Throw === 'r') {return {winner: p1, loser: p2}; }
+                if (p2Throw === 'p') {return 'tie'; }
+                if (p2Throw === 's') {return {winner: p2, loser: p1}; }
+                break;
 
-                case 's':
-                    if (p2Throw === 'r') return {winner: p2, loser: p1};
-                    if (p2Throw === 'p') return {winner: p1, loser: p2};
-                    if (p2Throw === 's') return 'tie';           
+            case 's':
+                if (p2Throw === 'r') {return {winner: p2, loser: p1}; }
+                if (p2Throw === 'p') {return {winner: p1, loser: p2}; }
+                if (p2Throw === 's') {return 'tie'; }
+                break;
 
             }
-            
         };
 
         this.getRounds = function () {
             return rounds;
-        }
+        };
 
         this.getResults = function () {
             return results;
@@ -201,30 +192,25 @@ var RPS = function () {
             gamePlayers[Object.keys(gamePlayers)[0]].again();
             gamePlayers[Object.keys(gamePlayers)[1]].again();
         };
-
     };
 
-
-
-
     this.Player = function (id) {
-        var ready = false;
+        var ready = false,
+            record = {
+                'wins': 0,
+                'losses': 0,
+                'ties': 0
+            };
 
-        var record = {
-          'wins': 0,
-          'losses': 0,
-          'ties': 0
+        if (arguments.length <= 0 || typeof id !== 'string') {
+            throw new Error('Player() takes exactly 1 string arg');
         }
 
-        if (arguments.length <= 0 || typeof arguments[0] !== 'string' ) {
-          throw new Error('Player() takes exactly 1 string arg ');
-        }
-        
         if (players.hasOwnProperty(id)) {
-          throw new Error('Game IDs must be unique');
+            throw new Error('Game IDs must be unique');
         } else {
-          players[id] = this;
-        }       
+            players[id] = this;
+        }
 
         this.getId = function () {
             return id;
@@ -243,12 +229,12 @@ var RPS = function () {
         };
 
         this.updateRecord = function (type) {
-          record[type]++;
-        };    
+            record[type] += 1;
+        };
 
         this.again = function () {
-          ready = false;
-        };            
+            ready = false;
+        };
     };
 };
 
