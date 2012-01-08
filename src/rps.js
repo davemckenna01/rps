@@ -237,6 +237,68 @@ var RPS = function () {
             ready = false;
         };
     };
+
+    this.connectionManager = {
+
+        init: function (io) {
+
+            io.sockets.on('connection', function (socket) {
+
+                var player = new that.Player(socket.id);
+
+                socket.emit('playerConnected', {
+                    message: 'hi from node, you\'re player id # ' + socket.id + ' and you\'re connected to me now!',
+                    playerId: socket.id
+                });
+
+                socket.on('joinGame', function (data) {
+                    console.log('player', socket.id, 'is trying to join game', data.gameId);
+
+                    var game = that.getGames().hasOwnProperty(data.gameId) ? that.getGames()[data.gameId] : null;
+
+                    if (game) {
+
+                        try {
+                            game.addPlayer(player);
+
+                            socket.emit('gameJoinSuccess', {
+                                //code: '',
+                                message: 'hi from node, you\'re player id # ' + socket.id + ' and you\'ve just joined game' + game.getId() + '!'
+                            });
+
+                            console.log('gameJoinSuccess');
+
+                        } catch (e) {
+                            socket.emit('gameJoinFailure', {
+                                //code: '',
+                                message: 'hi from node, you\'re player id # ' + socket.id + ' and you\'ve FAILED to join game' + game.getId() + ':('
+                            });
+
+                            console.log('gameJoinFailure');
+
+                            console.log('error:', e.message);
+
+                        }
+
+                    } else {
+
+                        socket.emit('gameJoinFailure', {
+                            //code: '',
+                            message: 'hi from node, you\'re player id #' + socket.id + ' and you\'ve FAILED to join game' + game.getId() + ':('
+                        });
+
+                        console.log('gameJoinFailure');
+                        console.log('there\'s no game with that id');
+                    }
+
+                    console.log(game);
+                    console.log(game.getPlayers());
+
+                });
+
+            });
+        }
+    };
 };
 
 exports.RPS = RPS;

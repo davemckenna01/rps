@@ -1,75 +1,87 @@
-var game = {
+var Game = function () {
 
-	id: window.location.href.split('/')[window.location.href.split('/').length - 1],
+    var gameObject = this,
+        gameId = window.location.href.split('/')[window.location.href.split('/').length - 1],
+        connection = io.connect('http://localhost:8000');
 
-	connection: io.connect('http://localhost:8000'),
 
-	initEventHandlers: function(){
-		console.log(this);
+    connection.on('playerConnected', function (data) {
 
-		var that = this;
 
-		this.connection.on('clientConnected', function (data) {
-			that.player.clientId = data.clientId;
+        gameObject.hostPlayer.id = data.playerId;
 
-			console.log(data.message);
-			console.log('I (the browser client) am now connected to node, and my id is', 
-						that.player.clientId);
+        console.log(data.message);
+        console.log('I (the browser player) am now connected to node, and my id is', 
+                    gameObject.hostPlayer.id);
 
-			that.connection.emit('joinGame', { gameId: that.id});
+        gameObject.hostPlayer.actions.joinGame();
 
-		});
+    });
 
-		this.connection.on('gameJoinSuccess', function (data) {
-			that.player.gameJoined = true;
-			console.log(data.message);
-			console.log('I (the browser client) have now joined the game, ('+ that.id +')');
+    connection.on('gameJoinSuccess', function (data) {
+        gameObject.hostPlayer.gameJoined = true;
+        console.log(data.message);
+        console.log('I (the browser player) have now joined the game, ('+ gameId +')');
 
-		});
+    });
 
-		this.connection.on('gameJoinFailure', function (data) {
-			that.player.gameJoined = false;
-			console.log(data.message);
-			console.log('I (the browser client) have failed to join the game, ('+ that.id +')');
+    connection.on('gameJoinFailure', function (data) {
+        gameObject.hostPlayer.gameJoined = false;
+        console.log(data.message);
+        console.log('I (the browser player) have failed to join the game, ('+ gameId +')');
 
-		});			
-		
-	},
+    });         
 
-	player: {
-		clientId: null,
-		gameJoined: false
-	}
+    this.guestPlayer = {
+        id: null,
+        gameJoined: false,
+
+        actions: {
+
+        }
+    },
+
+    this.hostPlayer = {
+        id: null,
+        gameJoined: false,
+
+        actions: {
+            joinGame: function(){
+                console.log('got here');
+                connection.emit('joinGame', { gameId: gameId}); 
+            },
+            ready: function(){
+                
+            },
+            doThrow: function(throwType){
+                
+                if (throwType !== 'r' && throwType !== 'p' && throwType !== 's'){
+                    throw new Error('Must be an "r", "p", or "s"');
+                }
+
+                connection.emit('throwEvent', {
+                    playerThrow: throwType
+                });                
+
+                console.log('I threw a', throwType)
+
+            }
+        }
+    }
+
 }
 
-game.initEventHandlers();
-
-
-
-
-
-
-
-
+var game = new Game();
 
 $('#rock').click(function(){
-	socket.emit('throwEvent', 
-		{playerThrow: 'r'
-		}
-	);
+    game.hostPlayer.actions.doThrow('r');
 });
 
 $('#paper').click(function(){
-	socket.emit('throwEvent', 
-		{playerThrow: 'p'
-		}
-	);
+    game.hostPlayer.actions.doThrow('p');
 });
 
 $('#scissors').click(function(){
-	socket.emit('throwEvent', 
-		{playerThrow: 's'
-		}
-	);
+    game.hostPlayer.actions.doThrow('s');
 });
 

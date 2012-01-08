@@ -1,41 +1,25 @@
-TestCase("TC 1 - Game() constructor", {
-  setUp: function () {
-    this.rps = new RPS();
-  },
+TestCase("TC 1 - check for basic properties required", {
+    setUp: function () {
+        this.game = game;
+    },
 
-  "test constructor must take 1 arg, a game id": function () {
+    "should have an id prop": function () {
 
-    var that = this;
+        assertEqual(this.game.hasOwnProperty('id'));
 
-    assertException(
-      function(){
-        var game = that.rps.Game();
-      },
-      'Error'
-    );
+        // assertException(
+        //   function(){
+        //     var game = that.rps.Game();
+        //   },
+        //   'Error'
+        // );
 
-    assertNoException(
-      function(){
-        var game = that.rps.Game('abc123');
-      }
-    );    
+        // assertNoException(
+        //   function(){
+        //     var game = that.rps.Game('abc123');
+        //   }
+        // );    
 
-  },
-
-  "test only one Game should ever be created": function () {
-
-    var that = this;
-
-    var game1 = that.rps.Game('abc123');
-
-    assertException(
-      function(){
-        var game2 = that.rps.Game('abc456');
-      },
-      'Error'
-    );
-
-  },
-
+    }
 
 });
