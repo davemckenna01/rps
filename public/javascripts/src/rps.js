@@ -1,12 +1,60 @@
 var socket = io.connect('http://localhost:8000');
+console.log('what is this "socket" object anyway?', socket);
 
-socket.on('serverEvent', function (data) {
-	console.log('receiving data:', data);
+var gameId = window.location.href.split('/')[window.location.href.split('/').length - 1];
+
+var clientId = '';
+
+var gameJoined = false;
+
+socket.on('clientConnected', function (data) {
+	clientId = data.clientId;
+
+	console.log(data.message);
+	console.log('I (the browser client) am now connected to node, and my id is', clientId);
+
+	socket.emit('joinGame', { gameId: gameId});
+
 });
+
+socket.on('gameJoinSuccess', function (data) {
+	gameJoined = true;
+	console.log(data.message);
+	console.log('I (the browser client) have now joined the game, ('+ gameId +')');
+
+});
+
+socket.on('gameJoinFailure', function (data) {
+	gameJoined = false;
+	console.log(data.message);
+	console.log('I (the browser client) have failed to join the game, ('+ gameId +')');
+
+});
+
+
+
+
+
 
 
 $('#rock').click(function(){
-	socket.emit('clientEvent', { fromClient: 'hi from the Browser' });	
+	socket.emit('throwEvent', 
+		{playerThrow: 'r'
+		}
+	);
 });
 
-console.log('what is this "socket" object anyway?', socket);
+$('#paper').click(function(){
+	socket.emit('throwEvent', 
+		{playerThrow: 'p'
+		}
+	);
+});
+
+$('#scissors').click(function(){
+	socket.emit('throwEvent', 
+		{playerThrow: 's'
+		}
+	);
+});
+
