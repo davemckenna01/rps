@@ -2,10 +2,10 @@ extends layout
 
 block content
 	h1= title
-	a#createGame(href='#', title='Create Game') Create Game
+	a#createGame(href='/create', title='Create Game') Create Game
 
 append scripts
 	script
-		var rps = new RPS();
-		var homePage = new rps.HomePage();
-		homePage.initCreateBtn();
+		//var rps = new RPS();
+		//var homePage = new rps.HomePage();
+		//homePage.initCreateBtn();

@@ -37,7 +37,7 @@ app.configure('production', function(){
 
 app.get('/', routes.index);
 
-app.post('/create', function(req, res){
+app.get('/create', function(req, res){
   routes.create(req, res, uuid);
 });
 

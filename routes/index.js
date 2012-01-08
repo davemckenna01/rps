@@ -9,10 +9,8 @@ exports.create = function(req, res, uuid){
 	var gameId = uuid.v4();
 
 	var game = new rps.Game(gameId);
-  	
-  	console.log(game.getId());
 
-  	res.send({"id": game.getId()});
+  	res.redirect('/game/' + game.getId());
 
 };
 
