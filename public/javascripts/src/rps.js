@@ -1,35 +1,50 @@
-var socket = io.connect('http://localhost:8000');
-console.log('what is this "socket" object anyway?', socket);
+var game = {
 
-var gameId = window.location.href.split('/')[window.location.href.split('/').length - 1];
+	id: window.location.href.split('/')[window.location.href.split('/').length - 1],
 
-var clientId = '';
+	connection: io.connect('http://localhost:8000'),
 
-var gameJoined = false;
+	initEventHandlers: function(){
+		console.log(this);
 
-socket.on('clientConnected', function (data) {
-	clientId = data.clientId;
+		var that = this;
 
-	console.log(data.message);
-	console.log('I (the browser client) am now connected to node, and my id is', clientId);
+		this.connection.on('clientConnected', function (data) {
+			that.player.clientId = data.clientId;
 
-	socket.emit('joinGame', { gameId: gameId});
+			console.log(data.message);
+			console.log('I (the browser client) am now connected to node, and my id is', 
+						that.player.clientId);
 
-});
+			that.connection.emit('joinGame', { gameId: that.id});
 
-socket.on('gameJoinSuccess', function (data) {
-	gameJoined = true;
-	console.log(data.message);
-	console.log('I (the browser client) have now joined the game, ('+ gameId +')');
+		});
 
-});
+		this.connection.on('gameJoinSuccess', function (data) {
+			that.player.gameJoined = true;
+			console.log(data.message);
+			console.log('I (the browser client) have now joined the game, ('+ that.id +')');
 
-socket.on('gameJoinFailure', function (data) {
-	gameJoined = false;
-	console.log(data.message);
-	console.log('I (the browser client) have failed to join the game, ('+ gameId +')');
+		});
 
-});
+		this.connection.on('gameJoinFailure', function (data) {
+			that.player.gameJoined = false;
+			console.log(data.message);
+			console.log('I (the browser client) have failed to join the game, ('+ that.id +')');
+
+		});			
+		
+	},
+
+	player: {
+		clientId: null,
+		gameJoined: false
+	}
+}
+
+game.initEventHandlers();
+
+
 
 
 
