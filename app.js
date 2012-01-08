@@ -11,8 +11,6 @@ var app = module.exports = express.createServer();
 
 var io = require('socket.io').listen(app);
 
-
-
 // Configuration
 
 app.configure(function(){
@@ -41,7 +39,9 @@ app.get('/create', function(req, res){
   routes.create(req, res, uuid);
 });
 
-app.get('/game/:id', routes.game);
+app.get('/game/:id', function(req, res){
+  routes.game(req, res, io);
+});
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", 
