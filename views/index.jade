@@ -1,17 +1,11 @@
-include layout
+extends layout
 
 block content
-
-h1= title
-
-a#createGame(href='#', title='Create Game') Create Game
-
-//p Welcome to #{title}
-
+	h1= title
+	a#createGame(href='#', title='Create Game') Create Game
 
 append scripts
-
-script
-	var rps = new RPS();
-	var homePage = new rps.HomePage();
-	homePage.initCreateBtn();
+	script
+		var rps = new RPS();
+		var homePage = new rps.HomePage();
+		homePage.initCreateBtn();

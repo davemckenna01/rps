@@ -1,7 +1,34 @@
-include layout
+extends layout
 
 block content
+	h1= title
+	p Welcome to game #{gameId}
 
-h1= title
-p Welcome to game #{gameId}
+	div.player#player1
+		h2 Player 1
 
+	div.player#player2
+		h2 Player 2
+
+
+	div#actions
+
+		a#ready Ready: 
+		span#readyStatus No
+
+		div#throws
+			a.rock Rock
+			a.paper Paper
+			a.scissors Scissors
+	
+	div#gameStatus
+		|Game status: 
+		|Nothing Happening
+		//or |In Progress
+		//or |?
+
+	div#countdown		
+
+block append scripts
+	script
+		console.log('wow')

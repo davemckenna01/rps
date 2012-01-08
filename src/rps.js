@@ -5,6 +5,10 @@ var RPS = function () {
         games = {},
         players = {};
 
+    this.getGames = function () {
+        return games;
+    };
+
     this.Game = function (id) {
         var gamePlayers = {},
             rounds = 0,

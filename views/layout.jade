@@ -1,14 +1,13 @@
-!!!
+!!! 5
 html
-head
-	block head
-		title= title
-		link(rel='stylesheet', href='/stylesheets/style.css')
-		
-		script(src='/javascripts/lib/jquery-1.7.1.min.js')
-		script(src='/javascripts/src/rps.js')
-body
-	block content
+	head
+		block head
+			title= title
+			link(rel='stylesheet', href='/stylesheets/style.css')
+			
+	body
+		block content
 
-
-	block scripts
+		block scripts
+			script(src='/javascripts/lib/jquery-1.7.1.min.js')
+			script(src='/javascripts/src/rps.js')
