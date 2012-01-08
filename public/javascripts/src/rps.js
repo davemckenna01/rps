@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:3000');
+var socket = io.connect('http://localhost:8000');
 
 socket.on('serverEvent', function (data) {
 	console.log('receiving data:', data);

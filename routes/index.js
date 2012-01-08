@@ -24,16 +24,5 @@ exports.game = function (req, res, io) {
 
 	console.log(game.getId(), game);
 
-	io.sockets.on('connection', function (socket) {
-
-		socket.emit('serverEvent', { fromServer: 'hi from node, you\'re client #' + socket.id});
-
-		socket.on('clientEvent', function (data) {
-			console.log('client ', socket.id, ' sent something...')
-			console.log(data);
-		});
-
-	});
-
 	res.render('game', { title: 'Game time y\'all', gameId: gameId });
 };
