@@ -7,47 +7,54 @@ var Game = function () {
 
     connection.on('playerConnected', function (data) {
 
-
-        gameObject.hostPlayer.id = data.playerId;
+        gameObject.you.id = data.playerId;
 
         console.log(data.message);
         console.log('I (the browser player) am now connected to node, and my id is', 
-                    gameObject.hostPlayer.id);
+                    gameObject.you.id);
 
-        gameObject.hostPlayer.actions.joinGame();
+        gameObject.you.actions.joinGame();
 
     });
 
     connection.on('gameJoinSuccess', function (data) {
-        gameObject.hostPlayer.gameJoined = true;
+        var you = gameObject.you;
+
+        you.gameJoined = true;
+
+        if (data.youreRole === 'host') {
+            you.role = 'host';
+        } else if (data.youreRole === 'guest') {
+            you.role = 'guest';
+        }
+
+        $('#' + you.role).addClass('you');
+
         console.log(data.message);
         console.log('I (the browser player) have now joined the game, ('+ gameId +')');
 
     });
 
     connection.on('gameJoinFailure', function (data) {
-        gameObject.hostPlayer.gameJoined = false;
+        gameObject.you.gameJoined = false;
         console.log(data.message);
         console.log('I (the browser player) have failed to join the game, ('+ gameId +')');
 
     });         
 
-    this.guestPlayer = {
+    this.them = {
         id: null,
         gameJoined: false,
-
-        actions: {
-
-        }
+        role: null,
     },
 
-    this.hostPlayer = {
+    this.you = {
         id: null,
         gameJoined: false,
+        role: null, //either "host" or "guest"
 
         actions: {
             joinGame: function(){
-                console.log('got here');
                 connection.emit('joinGame', { gameId: gameId}); 
             },
             ready: function(){

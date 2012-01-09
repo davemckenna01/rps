@@ -254,16 +254,24 @@ var RPS = function () {
                 socket.on('joinGame', function (data) {
                     console.log('player', socket.id, 'is trying to join game', data.gameId);
 
-                    var game = that.getGames().hasOwnProperty(data.gameId) ? that.getGames()[data.gameId] : null;
+                    var game = that.getGames().hasOwnProperty(data.gameId) ? that.getGames()[data.gameId] : null,
+                        role;
 
                     if (game) {
 
                         try {
                             game.addPlayer(player);
+                            
+                            if (Object.keys(game.getPlayers()).length === 1) {
+                                role = 'host';
+                            } else if (Object.keys(game.getPlayers()).length === 2) {
+                                role = 'guest';
+                            }
 
                             socket.emit('gameJoinSuccess', {
                                 //code: '',
-                                message: 'hi from node, you\'re player id # ' + socket.id + ' and you\'ve just joined game' + game.getId() + '!'
+                                message: 'hi from node, you\'re player id # ' + socket.id + ' and you\'ve just joined game' + game.getId() + '! Your role is ' + role,
+                                youreRole: role
                             });
 
                             console.log('gameJoinSuccess');
