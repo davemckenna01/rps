@@ -255,7 +255,7 @@ var RPS = function () {
                     console.log('player', socket.id, 'is trying to join game', data.gameId);
 
                     var game = that.getGames().hasOwnProperty(data.gameId) ? that.getGames()[data.gameId] : null,
-                        role;
+                        role;                        
 
                     if (game) {
 
@@ -272,6 +272,30 @@ var RPS = function () {
                                 //code: '',
                                 message: 'hi from node, you\'re player id # ' + socket.id + ' and you\'ve just joined game' + game.getId() + '! Your role is ' + role,
                                 youreRole: role
+                            });
+                            
+
+                            var players = game.getPlayers();
+                            var ready;
+                            var keys = Object.keys(players);
+                            var them;
+
+                            if (keys.length === 2) {
+                                
+                                if (players[keys[0]] === player){
+                                    them = players[keys[1]];
+                                } else {
+                                    them = players[keys[0]];
+                                }
+
+                                ready = them.isReady();
+
+                            } else {
+                                ready = false
+                            }
+
+                            socket.emit('updateThemStatus', {
+                                ready: ready
                             });
 
                             console.log('gameJoinSuccess');
@@ -299,10 +323,38 @@ var RPS = function () {
                         console.log('there\'s no game with that id');
                     }
 
-                    console.log(game);
-                    console.log(game.getPlayers());
+                });
+
+                socket.on('playerReady', function (data) {
+
+                    try {
+
+                        var game = that.getGames()[data.gameId];
+                        
+                        var player = game.getPlayers()[socket.id];
+
+                        player.ready();
+
+                        socket.emit('updateYouStatus', {
+                            ready: player.isReady()
+                        });
+
+                        console.log('Is player', player.getId(), 'ready?', player.isReady());
+
+                        console.log('Is game', game.getId(), 'ready?', game.isReady());
+
+                        if (game.isReady()){
+                            socket.emit('initiateCountdown');
+                        }
+
+                    } catch (e) {
+                        console.log(e.message);
+                    }
 
                 });
+
+
+
 
             });
         }
