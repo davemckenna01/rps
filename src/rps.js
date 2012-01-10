@@ -391,7 +391,7 @@ var RPS = function () {
                         console.log('there\'s no game with that id');
                     }
 
-                    socket.on('playerReady', function(data){
+                    socket.on('playerReady', function(){
 
                         player.ready();
 
@@ -402,7 +402,19 @@ var RPS = function () {
                             game.updateGameState(player.getId(), 'playerReady');
                         }
                         
-                    });                    
+                    });     
+                    
+                    socket.on('playerThrow', function(data){
+
+                        game.registerThrow(player.getId(), data.playerThrow);
+
+                        if (!game.hasBegun()){
+                            console.log('the game must be over');
+                            console.log(game.getResults());
+                            
+                        }
+                        
+                    });                                        
 
                 });
 

@@ -5,3 +5,7 @@ div.player.you {
 #throws {
 	display:none;
 }
+
+#throws span.thrown {
+	color:red;
+}

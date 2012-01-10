@@ -29,7 +29,13 @@ var Player = function (id) {
             throw new Error('Must be an "r", "p", or "s"');
         }
 
-        console.log('I threw a', throwType)
+        console.log('I, (', this.id, ') threw a', throwType);
+
+        this.connection.emit('playerThrow', {
+            playerThrow: throwType
+        });
+
+        $('#' + throwType).addClass('thrown');
 
     };
 
@@ -62,7 +68,7 @@ var Game = function () {
 
     this.start = function () {
 
-        this.executeAfterCountdown(1, 3, function(){
+        this.executeAfterCountdown(1, 1, function(){
             $('#ready').hide();
             $('#throws').show();            
         });
@@ -114,16 +120,16 @@ var Game = function () {
 
         //these should only be clickable when game
         //status is in progress/playing or w/e i'm calling it
-        $('#rock').click(function(){
-            game.you.actions.doThrow('r');
+        $('#r').click(function(){
+            game.you.doThrow('r');
         });
 
-        $('#paper').click(function(){
-            game.you.actions.doThrow('p');
+        $('#p').click(function(){
+            game.you.doThrow('p');
         });
 
-        $('#scissors').click(function(){
-            game.you.actions.doThrow('s');
+        $('#s').click(function(){
+            game.you.doThrow('s');
         });        
     }; 
 
@@ -146,9 +152,12 @@ var Game = function () {
 
                 youState = stateData.playerData[stateData.initiatorId];
 
-                that.you = new Player(stateData.initiatorId);
-
-                that.players[that.you.id] = that.you;
+                if (!that.you) {
+                    that.you = new Player(stateData.initiatorId);
+                    that.players[that.you.id] = that.you;
+                    console.log('new YOU created');
+                    that.initButtons();
+                }
 
                 that.you.gameId = gameId;
                 that.you.connection = connection;         
@@ -157,16 +166,16 @@ var Game = function () {
                 that.you.indicateInRoom();
                 that.you.highlight();
 
-                that.initButtons();
-
             } else {
                 console.log('that\'s them');
 
                 themState = stateData.playerData[stateData.initiatorId];
 
-                that.them = new Player(stateData.initiatorId);
-
-                that.players[that.them.id] = that.them;
+                if (!that.them) {
+                    that.them = new Player(stateData.initiatorId);
+                    that.players[that.them.id] = that.them;
+                    console.log('new THEM created');
+                }
 
                 that.them.gameId = gameId;
                 that.them.connection = connection;
