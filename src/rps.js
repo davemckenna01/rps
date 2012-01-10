@@ -212,6 +212,37 @@ var RPS = function () {
         this.getGuest = function () {
             return guest;
         };
+
+        this.updatePlayerStates = function(initiatorId, inResponseTo) {
+
+            var allPlayerData = {};
+
+            for (var key in this.getPlayers()){
+                if (this.getPlayers().hasOwnProperty(key)) {
+                    
+                    var player = this.getPlayers()[key];
+
+                    allPlayerData[player.getId()] = {};
+                    allPlayerData[player.getId()].ready = player.isReady();   
+                }                
+            }            
+
+            for (var key in this.getPlayers()){
+                if (this.getPlayers().hasOwnProperty(key)) {
+                    
+                    var player = this.getPlayers()[key];
+
+                    player.getSocket().emit('updatePlayerStates', {
+                        inResponseTo: inResponseTo,
+                        initiatorId: initiatorId,
+                        playerData: allPlayerData
+                    });
+
+                    console.log(this.getPlayers());
+                }
+            }  
+                      
+        }
     };
 
     this.Player = function (id) {
@@ -288,7 +319,7 @@ var RPS = function () {
                 var player = new that.Player(socket.id);
                 player.setSocket(socket);
 
-                socket.emit('playerConnected', {
+                socket.emit('connectionMade', {
                     message: 'hi from node, you\'re player id # ' + player.getId() + ' and you\'re connected to me now! Though that doesn\'t mean you\'ll be able to join a game...',
                     playerId: player.getId()
                 });
@@ -308,6 +339,7 @@ var RPS = function () {
                                 role: player.getRole()
                             });
 
+                            game.updatePlayerStates(player.getId(), 'joinGame');
 
                             console.log('gameJoinSuccess');
 
@@ -331,14 +363,12 @@ var RPS = function () {
 
                     console.log(game.getPlayers());
 
-                    socket.on('updateAll', function(data){
-                        for (player in game.getPlayers()){
-                            console.log(player);
-                            if (game.getPlayers().hasOwnProperty(player)) {
-                                game.getPlayers()[player].getSocket().emit('whammo', data);
-                            }
-                            
-                        }
+                    socket.on('playerReady', function(data){
+
+                        player.ready();
+
+                        game.updatePlayerStates(player.getId(), 'playerReady');
+                        
                     });                    
 
                 });
@@ -346,7 +376,7 @@ var RPS = function () {
 
 
                 
-                
+
 
 
 

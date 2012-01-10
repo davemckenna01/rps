@@ -21,7 +21,13 @@ var Player = function (id) {
         });
     };
 
+    this.indicateInRoom = function () {
+        $('#' + this.role + ' h2').append(' # ' + this.id);
+    };
+
     this.ready = function(){
+        console.log('ready');
+        this.connection.emit('playerReady');        
     };
 
     this.doThrow = function(throwType){
@@ -39,73 +45,79 @@ var Player = function (id) {
 var Game = function () {
 
     var gameId = window.location.href.split('/')[window.location.href.split('/').length - 1],
-        connection = io.connect('http://localhost:8000'),
-        host,
-        guest,
-        you,
-        them;
+        connection = io.connect('http://localhost:8000');
 
-    ////////////////INIT STUFF////////////////
-    connection.on('playerConnected', function (data) {
+    var that = this;
 
-        you = new Player(data.playerId);
-        you.gameId = gameId;
-        you.connection = connection;
+    this.you;
 
-        console.log(data.message);
-        console.log('I (the browser player) am now connected to node, and my id is',
-                    data.playerId);
+    this.them;
 
-        you.joinGame();
-
-    });
-
-    connection.on('gameJoinSuccess', function (data) {
-
-        console.log(data.message);
-        console.log('I (the browser player) have now joined the game, ('+ gameId +')');
-
-        you.role = data.role;
-        you.highlight();
-
-    });
-
-    connection.on('gameJoinFailure', function (data) {
-        console.log(data.message);
-        console.log('I (the browser player) have failed to join the game, ('+ gameId +')');
-
-    });        
-    ///////////////////////////////////////                             
-    
-    connection.on('whammo', function (data) {
-        console.log(data);
-    });          
-    
     this.updateAll = function(){
         connection.emit('updateAll', {yello: 'hiya!'});
-    };      
+    };    
+
+    this.init = function(){
+        connection.on('connectionMade', function (data) {
+
+            that.you = new Player(data.playerId);
+            that.you.gameId = gameId;
+            that.you.connection = connection;
+
+            console.log(data.message);
+            console.log('I (the browser player) am now connected to node, and my id is',
+                        data.playerId);
+
+            that.you.joinGame();
+
+        });
+
+        connection.on('gameJoinSuccess', function (data) {
+
+            console.log(data.message);
+            console.log('I (the browser player) have now joined the game, ('+ gameId +')');
+
+            that.you.role = data.role;
+            that.you.indicateInRoom();
+            that.you.highlight();
+            that.initButtons();
+
+        });
+
+        connection.on('gameJoinFailure', function (data) {
+            console.log(data.message);
+            console.log('I (the browser player) have failed to join the game, ('+ gameId +')');
+
+        });
+            
+    };
+
+    this.initButtons = function (){
+        $('#ready').click(function(){
+            game.you.ready();
+        });
+
+        //these should only be clickable when game
+        //status is in progress/playing or w/e i'm calling it
+        $('#rock').click(function(){
+            game.you.actions.doThrow('r');
+        });
+
+        $('#paper').click(function(){
+            game.you.actions.doThrow('p');
+        });
+
+        $('#scissors').click(function(){
+            game.you.actions.doThrow('s');
+        });        
+    }; 
+
+    connection.on('updatePlayerStates', function (data) {
+        console.log(data);
+    });            
 
 }
 
 var game = new Game();
+game.init();
 
-
-
-$('#ready').click(function(){
-    game.you.actions.ready();
-});
-
-//these should only be clickable when game
-//status is in progress/playing or w/e i'm calling it
-$('#rock').click(function(){
-    game.you.actions.doThrow('r');
-});
-
-$('#paper').click(function(){
-    game.you.actions.doThrow('p');
-});
-
-$('#scissors').click(function(){
-    game.you.actions.doThrow('s');
-});
-//////////////////////////////////////////////////
