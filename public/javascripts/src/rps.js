@@ -20,7 +20,6 @@ var Player = function (id) {
     };
 
     this.ready = function(){
-        console.log('ready');
         this.connection.emit('playerReady');        
     };
 
@@ -50,6 +49,7 @@ var Game = function () {
 
     this.players = {};
 
+    //Again ... this is SO bad
     this.hasBegun;
 
     this.joinPlayer = function (playerId) {
@@ -60,8 +60,36 @@ var Game = function () {
         
     };
 
-    this.updateAll = function(){
-        connection.emit('updateAll', {yello: 'hiya!'});
+    this.start = function () {
+
+        this.executeAfterCountdown(1, 3, function(){
+            $('#ready').hide();
+            $('#throws').show();            
+        });
+                 
+    };
+
+    this.executeAfterCountdown = function (from, to, callback) {
+        function loop(){  
+            console.log(from);
+            
+            from += 1;
+            
+            t = setTimeout(loop, 1000);
+
+            if (from === to + 1) {
+                clearTimeout(t);
+                console.log('over');
+                callback();
+            }
+        };
+        loop();
+    };
+
+    this.stop = function () {
+        $('#ready').show();
+        $('#throws').hide();
+        this.hasBegun = false;
     };    
 
     this.init = function(){
@@ -100,6 +128,13 @@ var Game = function () {
     }; 
 
     connection.on('updatePlayerStates', function (stateData) {
+        //There's a bunch of duplication happening here - need to 
+        //clean it up... filter so that we're only updating player
+        //objects that actually should be need to be updated.
+        //Devil's advocate: but maybe that's a good design decision ... it
+        //ensures state is always most current.
+        //Maybe just need better console log messages???
+
         var youState,
             themState;
 
@@ -180,6 +215,8 @@ var Game = function () {
         if (stateData.inResponseTo === 'playerReady') {
             console.log('Both players must now be ready so the game will start now');
             
+            that.hasBegun = stateData.gameData.hasBegun;
+            that.start();
             console.log(stateData);
         }          
 

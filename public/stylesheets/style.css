@@ -1,3 +1,7 @@
 div.player.you {
 	color:red;
 }
+
+#throws {
+	display:none;
+}
