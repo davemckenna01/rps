@@ -42,10 +42,13 @@ var Game = function () {
         connection = io.connect('http://localhost:8000');
 
     var that = this;
-
+    this.con = connection;
+    
     this.you;
 
     this.them;
+
+    this.players = {};
 
     this.joinPlayer = function (playerId) {
 
@@ -97,18 +100,37 @@ var Game = function () {
     connection.on('updatePlayerStates', function (data) {
 
         if (data.inResponseTo === 'joinGame') {
-
             console.log('Player', data.initiatorId, 'just joined the game.');
 
-            that.you = new Player(data.initiatorId);
-            that.you.gameId = gameId;
-            that.you.connection = connection;         
+            if (data.initiatorId === game.con.socket.sessionid) {
+                console.log('that\'s you');
 
-            that.you.role = data.playerData[data.initiatorId].role;
-            that.you.indicateInRoom();
-            that.you.highlight();
+                that.you = new Player(data.initiatorId);
+
+                that.players[that.you.id] = that.you;
+
+                that.you.gameId = gameId;
+                that.you.connection = connection;         
+
+                that.you.role = data.playerData[data.initiatorId].role;
+                that.you.indicateInRoom();
+                that.you.highlight();
+            } else {
+                console.log('that\'s them');
+
+                that.them = new Player(data.initiatorId);
+
+                that.players[that.them.id] = that.them;
+
+                that.them.gameId = gameId;
+                that.them.connection = connection;         
+
+                that.them.role = data.playerData[data.initiatorId].role;
+                that.them.indicateInRoom();
+                that.them.highlight();                
+            }
+
             that.initButtons();
-                        
             console.log(data);
 
         }
