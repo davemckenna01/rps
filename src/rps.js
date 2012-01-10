@@ -224,7 +224,7 @@ var RPS = function () {
 
                     allPlayerData[player.getId()] = {};
                     allPlayerData[player.getId()].ready = player.isReady();   
-                    allPlayerData[player.getId()].role = player.getRole();   
+                    allPlayerData[player.getId()].role = player.getRole();
                 }                
             }            
 
@@ -336,6 +336,13 @@ var RPS = function () {
                             game.addPlayer(player);
 
                             game.updatePlayerStates(player.getId(), 'joinGame');
+
+                            if (Object.keys(game.getPlayers()).length === 2){
+                                //faking the host joining the game, just to update UI
+                                //kinda hacky i know...
+
+                                game.updatePlayerStates(game.getHost().getId(), 'joinGame');
+                            }
 
                             console.log('gameJoinSuccess');
 

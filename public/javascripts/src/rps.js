@@ -6,8 +6,8 @@ var Player = function (id) {
     this.currentThrow;
     //members connection and gameId are added within Game
 
-    this.updateReadyIcon =function (ready) {
-        var readyStatus = ready ? 'Ready' : 'Not Ready';
+    this.updateReadyIcon =function () {
+        var readyStatus = this.ready ? 'Ready' : 'Not Ready';
         $('#' + this.role + ' .readyStatus').text(readyStatus);
     };
 
@@ -97,43 +97,79 @@ var Game = function () {
         });        
     }; 
 
-    connection.on('updatePlayerStates', function (data) {
+    connection.on('updatePlayerStates', function (stateData) {
+        var youState,
+            themState;
 
-        if (data.inResponseTo === 'joinGame') {
-            console.log('Player', data.initiatorId, 'just joined the game.');
+        if (stateData.inResponseTo === 'joinGame') {
+            console.log('Player', stateData.initiatorId, 'just joined the game.');
 
-            if (data.initiatorId === game.con.socket.sessionid) {
+            if (stateData.initiatorId === connection.socket.sessionid) {
                 console.log('that\'s you');
 
-                that.you = new Player(data.initiatorId);
+                youState = stateData.playerData[stateData.initiatorId];
+
+                that.you = new Player(stateData.initiatorId);
 
                 that.players[that.you.id] = that.you;
 
                 that.you.gameId = gameId;
                 that.you.connection = connection;         
 
-                that.you.role = data.playerData[data.initiatorId].role;
+                that.you.role = youState.role;
                 that.you.indicateInRoom();
                 that.you.highlight();
+
+                that.initButtons();
+
             } else {
                 console.log('that\'s them');
 
-                that.them = new Player(data.initiatorId);
+                themState = stateData.playerData[stateData.initiatorId];
+
+                that.them = new Player(stateData.initiatorId);
 
                 that.players[that.them.id] = that.them;
 
                 that.them.gameId = gameId;
-                that.them.connection = connection;         
+                that.them.connection = connection;
 
-                that.them.role = data.playerData[data.initiatorId].role;
-                that.them.indicateInRoom();
-                that.them.highlight();                
+                that.them.role = themState.role;
+                that.them.indicateInRoom();       
+                
+                if (themState.ready){
+                    that.them.ready = themState.ready;
+                    that.them.updateReadyIcon();
+                }
             }
 
-            that.initButtons();
-            console.log(data);
+            console.log(stateData);
 
         }
+
+        if (stateData.inResponseTo === 'playerReady') {
+            console.log('Player', stateData.initiatorId, 'is now ready.');
+            
+            if (stateData.initiatorId === connection.socket.sessionid) {
+                console.log('that\'s you');
+            
+                youState = stateData.playerData[stateData.initiatorId];
+
+                that.you.ready = youState.ready;
+                that.you.updateReadyIcon();
+
+            } else {
+                console.log('that\'s them');
+            
+                themState = stateData.playerData[stateData.initiatorId];
+
+                that.them.ready = themState.ready;
+                that.them.updateReadyIcon();                
+            }
+
+            console.log(stateData);
+
+        }        
 
     });            
 
