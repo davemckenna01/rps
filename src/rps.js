@@ -71,7 +71,7 @@ var RPS = function () {
         };
 
         this.isReady = function () {
-            var ready = null,
+            var ready,
                 keys = Object.keys(gamePlayers);
 
             if (keys.length < 2) {
@@ -345,6 +345,7 @@ var RPS = function () {
 
 
 
+                
                 
 
 
