@@ -16,7 +16,7 @@ var Player = function (id) {
     };
 
     this.indicateInRoom = function () {
-        $('#' + this.role + ' h2').append(' # ' + this.id);
+        $('#' + this.role + ' h2 .inRoomIndicator').text(' # ' + this.id);
     };
 
     this.ready = function(){

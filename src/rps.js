@@ -213,6 +213,7 @@ var RPS = function () {
             return guest;
         };
 
+        //Not tested
         this.updatePlayerStates = function(initiatorId, inResponseTo) {
 
             var allPlayerData = {};
