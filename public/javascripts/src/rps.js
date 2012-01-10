@@ -15,12 +15,6 @@ var Player = function (id) {
         $('#' + this.role).addClass('you');            
     };
 
-    this.joinGame = function(){
-        this.connection.emit('joinGame', {
-           gameId: this.gameId 
-        });
-    };
-
     this.indicateInRoom = function () {
         $('#' + this.role + ' h2').append(' # ' + this.id);
     };
@@ -53,6 +47,14 @@ var Game = function () {
 
     this.them;
 
+    this.joinPlayer = function (playerId) {
+
+        connection.emit('joinGame', {
+           gameId: gameId 
+        });
+        
+    };
+
     this.updateAll = function(){
         connection.emit('updateAll', {yello: 'hiya!'});
     };    
@@ -60,27 +62,7 @@ var Game = function () {
     this.init = function(){
         connection.on('connectionMade', function (data) {
 
-            that.you = new Player(data.playerId);
-            that.you.gameId = gameId;
-            that.you.connection = connection;
-
-            console.log(data.message);
-            console.log('I (the browser player) am now connected to node, and my id is',
-                        data.playerId);
-
-            that.you.joinGame();
-
-        });
-
-        connection.on('gameJoinSuccess', function (data) {
-
-            console.log(data.message);
-            console.log('I (the browser player) have now joined the game, ('+ gameId +')');
-
-            that.you.role = data.role;
-            that.you.indicateInRoom();
-            that.you.highlight();
-            that.initButtons();
+            that.joinPlayer(data.playerId);
 
         });
 
@@ -113,7 +95,24 @@ var Game = function () {
     }; 
 
     connection.on('updatePlayerStates', function (data) {
-        console.log(data);
+
+        if (data.inResponseTo === 'joinGame') {
+
+            console.log('Player', data.initiatorId, 'just joined the game.');
+
+            that.you = new Player(data.initiatorId);
+            that.you.gameId = gameId;
+            that.you.connection = connection;         
+
+            that.you.role = data.playerData[data.initiatorId].role;
+            that.you.indicateInRoom();
+            that.you.highlight();
+            that.initButtons();
+                        
+            console.log(data);
+
+        }
+
     });            
 
 }

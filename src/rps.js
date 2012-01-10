@@ -224,6 +224,7 @@ var RPS = function () {
 
                     allPlayerData[player.getId()] = {};
                     allPlayerData[player.getId()].ready = player.isReady();   
+                    allPlayerData[player.getId()].role = player.getRole();   
                 }                
             }            
 
@@ -334,11 +335,6 @@ var RPS = function () {
                         try {
                             game.addPlayer(player);
 
-                            socket.emit('gameJoinSuccess', {
-                                message: 'hi from node, you\'re player id # ' + player.getId() + ' and you\'ve just joined game ' + game.getId() + '! Your role is ' + player.getRole(),
-                                role: player.getRole()
-                            });
-
                             game.updatePlayerStates(player.getId(), 'joinGame');
 
                             console.log('gameJoinSuccess');
@@ -360,8 +356,6 @@ var RPS = function () {
                         console.log('gameJoinFailure');
                         console.log('there\'s no game with that id');
                     }
-
-                    console.log(game.getPlayers());
 
                     socket.on('playerReady', function(data){
 
