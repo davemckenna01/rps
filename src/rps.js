@@ -14,7 +14,9 @@ var RPS = function () {
             rounds = 0,
             inProgress,
             playerThrows,
-            results;
+            results,
+            host,
+            guest;
 
         function initGameProps() {
             inProgress = false;
@@ -51,8 +53,17 @@ var RPS = function () {
             if (Object.keys(gamePlayers).length >= 2) {
                 throw new Error('Games may take a max of 2 Players');
             } else {
+                if (Object.keys(gamePlayers).length === 0) {
+                    player.setRole('host');
+                    host = player;
+                } else {
+                    player.setRole('guest');
+                    guest = player;
+                }
+                
                 gamePlayers[player.getId()] = player;
             }
+
         };
 
         this.getPlayers = function () {
@@ -193,6 +204,14 @@ var RPS = function () {
             gamePlayers[Object.keys(gamePlayers)[0]].again();
             gamePlayers[Object.keys(gamePlayers)[1]].again();
         };
+
+        this.getHost = function () {
+            return host;
+        };
+
+        this.getGuest = function () {
+            return guest;
+        };
     };
 
     this.Player = function (id) {
@@ -201,7 +220,9 @@ var RPS = function () {
                 'wins': 0,
                 'losses': 0,
                 'ties': 0
-            };
+            },
+            role,
+            socket;
 
         if (arguments.length <= 0 || typeof id !== 'string') {
             throw new Error('Player() takes exactly 1 string arg');
@@ -236,6 +257,26 @@ var RPS = function () {
         this.again = function () {
             ready = false;
         };
+
+        this.setRole = function(r){
+            if (r !== 'host' && r !== 'guest'){
+                throw new Error ('Role can only be "host" or "guest"')
+            }
+            role = r;
+        }
+
+        this.getRole = function(){
+            return role;
+        }
+
+        this.setSocket = function(s){
+            socket = s;
+        }
+
+        this.getSocket = function(s){
+            return socket;
+        }
+
     };
 
     this.connectionManager = {
@@ -245,114 +286,66 @@ var RPS = function () {
             io.sockets.on('connection', function (socket) {
 
                 var player = new that.Player(socket.id);
+                player.setSocket(socket);
 
                 socket.emit('playerConnected', {
-                    message: 'hi from node, you\'re player id # ' + socket.id + ' and you\'re connected to me now!',
-                    playerId: socket.id
+                    message: 'hi from node, you\'re player id # ' + player.getId() + ' and you\'re connected to me now! Though that doesn\'t mean you\'ll be able to join a game...',
+                    playerId: player.getId()
                 });
 
                 socket.on('joinGame', function (data) {
                     console.log('player', socket.id, 'is trying to join game', data.gameId);
 
-                    var game = that.getGames().hasOwnProperty(data.gameId) ? that.getGames()[data.gameId] : null,
-                        role;                        
+                    var game = that.getGames().hasOwnProperty(data.gameId) ? that.getGames()[data.gameId] : null;
 
                     if (game) {
 
                         try {
                             game.addPlayer(player);
-                            
-                            if (Object.keys(game.getPlayers()).length === 1) {
-                                role = 'host';
-                            } else if (Object.keys(game.getPlayers()).length === 2) {
-                                role = 'guest';
-                            }
 
                             socket.emit('gameJoinSuccess', {
-                                //code: '',
-                                message: 'hi from node, you\'re player id # ' + socket.id + ' and you\'ve just joined game' + game.getId() + '! Your role is ' + role,
-                                youreRole: role
+                                message: 'hi from node, you\'re player id # ' + player.getId() + ' and you\'ve just joined game ' + game.getId() + '! Your role is ' + player.getRole(),
+                                role: player.getRole()
                             });
-                            
 
-                            var players = game.getPlayers();
-                            var ready;
-                            var keys = Object.keys(players);
-                            var them;
-
-                            if (keys.length === 2) {
-                                
-                                if (players[keys[0]] === player){
-                                    them = players[keys[1]];
-                                } else {
-                                    them = players[keys[0]];
-                                }
-
-                                ready = them.isReady();
-
-                            } else {
-                                ready = false
-                            }
-
-                            socket.emit('updateThemStatus', {
-                                ready: ready
-                            });
 
                             console.log('gameJoinSuccess');
 
                         } catch (e) {
                             socket.emit('gameJoinFailure', {
-                                //code: '',
-                                message: 'hi from node, you\'re player id # ' + socket.id + ' and you\'ve FAILED to join game' + game.getId() + ':('
+                                message: 'hi from node, you\'re player id # ' + player.getId() + ' and you\'ve FAILED to join game ' + game.getId() + ' because there\'s already 2 players'
                             });
-
                             console.log('gameJoinFailure');
-
                             console.log('error:', e.message);
-
                         }
 
                     } else {
 
                         socket.emit('gameJoinFailure', {
-                            //code: '',
-                            message: 'hi from node, you\'re player id #' + socket.id + ' and you\'ve FAILED to join game' + game.getId() + ':('
+                            message: 'hi from node, you\'re player id #' + player.getId() + ' and you\'ve FAILED to join game ' + game.getId() + ' because that game doesn\'t exist'
                         });
 
                         console.log('gameJoinFailure');
                         console.log('there\'s no game with that id');
                     }
 
-                });
+                    console.log(game.getPlayers());
 
-                socket.on('playerReady', function (data) {
-
-                    try {
-
-                        var game = that.getGames()[data.gameId];
-                        
-                        var player = game.getPlayers()[socket.id];
-
-                        player.ready();
-
-                        socket.emit('updateYouStatus', {
-                            ready: player.isReady()
-                        });
-
-                        console.log('Is player', player.getId(), 'ready?', player.isReady());
-
-                        console.log('Is game', game.getId(), 'ready?', game.isReady());
-
-                        if (game.isReady()){
-                            socket.emit('initiateCountdown');
+                    socket.on('updateAll', function(data){
+                        for (player in game.getPlayers()){
+                            console.log(player);
+                            if (game.getPlayers().hasOwnProperty(player)) {
+                                game.getPlayers()[player].getSocket().emit('whammo', data);
+                            }
+                            
                         }
-
-                    } catch (e) {
-                        console.log(e.message);
-                    }
+                    });                    
 
                 });
 
+
+
+                
 
 
 

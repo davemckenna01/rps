@@ -1,139 +1,95 @@
+var Player = function (id) {
+    this.id = id;
+    this.joined = false;
+    this.role;
+    this.ready = false;
+    this.currentThrow;
+    //members connection and gameId are added within Game
+
+    this.updateReadyIcon =function (ready) {
+        var readyStatus = ready ? 'Ready' : 'Not Ready';
+        $('#' + this.role + ' .readyStatus').text(readyStatus);
+    };
+
+    this.highlight = function () {
+        $('#' + this.role).addClass('you');            
+    };
+
+    this.joinGame = function(){
+        this.connection.emit('joinGame', {
+           gameId: this.gameId 
+        });
+    };
+
+    this.ready = function(){
+    };
+
+    this.doThrow = function(throwType){
+        
+        if (throwType !== 'r' && throwType !== 'p' && throwType !== 's'){
+            throw new Error('Must be an "r", "p", or "s"');
+        }
+
+        console.log('I threw a', throwType)
+
+    };
+
+};
+
 var Game = function () {
 
-    var gameObject = this,
-        gameId = window.location.href.split('/')[window.location.href.split('/').length - 1],
+    var gameId = window.location.href.split('/')[window.location.href.split('/').length - 1],
         connection = io.connect('http://localhost:8000'),
+        host,
+        guest,
+        you,
+        them;
 
-        state;
-        //off (nobody's ready)
-        //started (both are ready)
-        //throws are happening
-
-
+    ////////////////INIT STUFF////////////////
     connection.on('playerConnected', function (data) {
 
-        gameObject.you.id = data.playerId;
+        you = new Player(data.playerId);
+        you.gameId = gameId;
+        you.connection = connection;
 
         console.log(data.message);
-        console.log('I (the browser player) am now connected to node, and my id is', 
-                    gameObject.you.id);
+        console.log('I (the browser player) am now connected to node, and my id is',
+                    data.playerId);
 
-        gameObject.you.actions.joinGame();
+        you.joinGame();
 
     });
 
     connection.on('gameJoinSuccess', function (data) {
-        var you = gameObject.you,
-            them = gameObject.them;
-
-        you.gameJoined = true;
-
-        if (data.youreRole === 'host') {
-            you.role = 'host';
-            them.role = 'guest'
-        } else if (data.youreRole === 'guest') {
-            you.role = 'guest';
-            them.role = 'host'
-        }
-
-        you.highlight();
 
         console.log(data.message);
         console.log('I (the browser player) have now joined the game, ('+ gameId +')');
 
+        you.role = data.role;
+        you.highlight();
+
     });
 
     connection.on('gameJoinFailure', function (data) {
-        gameObject.you.gameJoined = false;
         console.log(data.message);
         console.log('I (the browser player) have failed to join the game, ('+ gameId +')');
 
-    });            
-
-    connection.on('initiateCountdown', function (data) {
-        console.log('initiate countdown');
-    });      
-
-    connection.on('updateYouStatus', function (data) {
-        var you = gameObject.you;
-        /*
-            data = {
-                ready: true
-            }
-        */
-
-        you.ready = data.ready;
-        you.updateReadyIcon(data.ready);
-        
-
-    });              
-
-    connection.on('updateThemStatus', function (data) {
-        var them = gameObject.them;
-
-        them.ready = data.ready;
-        them.updateReadyIcon(data.ready);        
-
+    });        
+    ///////////////////////////////////////                             
+    
+    connection.on('whammo', function (data) {
+        console.log(data);
     });          
-
-    this.them = {
-        id: null,
-        gameJoined: false,
-        role: null,
-        ready: false,
-        currentThrow: null,
-
-        updateReadyIcon: function (ready) {
-            var readyStatus = ready ? 'Ready' : 'Not Ready';
-            $('#' + this.role + ' .readyStatus').text(readyStatus);
-        }
-                
-    },
-
-    this.you = {
-        id: null,
-        gameJoined: false,
-        role: null,
-        ready: false,
-        currentThrow: null,
-
-        updateReadyIcon: function (ready) {
-            var readyStatus = ready ? 'Ready' : 'Not Ready';
-            $('#' + this.role + ' .readyStatus').text(readyStatus);
-        },        
-
-        highlight: function () {
-            $('#' + this.role).addClass('you');            
-        },
-
-        actions: {
-            joinGame: function(){
-                connection.emit('joinGame', { gameId: gameId}); 
-            },
-            ready: function(){
-                connection.emit('playerReady', { 
-                    gameId: gameId
-                }); 
-            },
-            doThrow: function(throwType){
-                
-                if (throwType !== 'r' && throwType !== 'p' && throwType !== 's'){
-                    throw new Error('Must be an "r", "p", or "s"');
-                }
-
-                connection.emit('throwEvent', {
-                    playerThrow: throwType
-                });                
-
-                console.log('I threw a', throwType)
-
-            }
-        }
-    }
+    
+    this.updateAll = function(){
+        connection.emit('updateAll', {yello: 'hiya!'});
+    };      
 
 }
 
 var game = new Game();
+
+
 
 $('#ready').click(function(){
     game.you.actions.ready();

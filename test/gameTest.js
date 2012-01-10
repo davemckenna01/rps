@@ -179,7 +179,27 @@ module.exports = testCase({
 
       test.done();
 
-    }    
+    },
+
+    "test player should be assigned role of host if 1st one added, and guest if 2nd": function(test) {
+
+      var game = new this.rps.Game('abc123');
+
+      var player1 = new this.rps.Player('p1');
+      var player2 = new this.rps.Player('p2');
+
+      game.addPlayer(player1);
+      game.addPlayer(player2);
+
+      test.equal(player1.getRole(), 'host');
+      test.equal(player2.getRole(), 'guest');
+
+      test.strictEqual(game.getHost(), player1);
+      test.strictEqual(game.getGuest(), player2);
+
+      test.done();
+
+    }        
   
   }),
 
