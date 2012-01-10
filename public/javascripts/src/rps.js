@@ -4,7 +4,11 @@ var Player = function (id) {
     this.role;
     this.ready = false;
     this.currentThrow;
+    this.record;
+
     //members connection and gameId are added within Game
+    this.connection;
+    this.gameId;
 
     this.updateReadyIcon =function () {
         var readyStatus = this.ready ? 'Ready' : 'Not Ready';
@@ -19,7 +23,7 @@ var Player = function (id) {
         $('#' + this.role + ' h2 .inRoomIndicator').text(' # ' + this.id);
     };
 
-    this.ready = function(){
+    this.imReady = function(){
         this.connection.emit('playerReady');        
     };
 
@@ -39,6 +43,14 @@ var Player = function (id) {
 
     };
 
+    this.updateHand = function(throwType){
+        $('#' + this.role + ' .hand').text(throwType);
+    }
+
+    this.resetHand = function(){
+        $('#' + this.role + ' .hand').text('--');
+    }    
+
 };
 
 var Game = function () {
@@ -47,13 +59,13 @@ var Game = function () {
         connection = io.connect('http://localhost:8000'),
         that = this;
     
-    this.con = connection;
-    
     this.you;
 
     this.them;
 
     this.players = {};
+
+    this.rounds;
 
     //Again ... this is SO bad
     this.hasBegun;
@@ -93,6 +105,7 @@ var Game = function () {
     };
 
     this.stop = function () {
+        $('#throws span').removeClass('thrown');
         $('#ready').show();
         $('#throws').hide();
         this.hasBegun = false;
@@ -115,7 +128,7 @@ var Game = function () {
 
     this.initButtons = function (){
         $('#ready').click(function(){
-            game.you.ready();
+            game.you.imReady();
         });
 
         //these should only be clickable when game
@@ -148,6 +161,8 @@ var Game = function () {
             console.log('Player', stateData.initiatorId, 'just joined the game.');
 
             if (stateData.initiatorId === connection.socket.sessionid) {
+                //i.e. if it's in response to an action by the browser's user (i.e. YOU)
+
                 console.log('that\'s you');
 
                 youState = stateData.playerData[stateData.initiatorId];
@@ -197,6 +212,8 @@ var Game = function () {
             console.log('Player', stateData.initiatorId, 'is now ready.');
             
             if (stateData.initiatorId === connection.socket.sessionid) {
+                //i.e. if it's in response to an action by the browser's user (i.e. YOU)
+
                 console.log('that\'s you');
             
                 youState = stateData.playerData[stateData.initiatorId];
@@ -215,19 +232,67 @@ var Game = function () {
 
             console.log(stateData);
 
-        }        
+        }
+        
+        if (stateData.inResponseTo === 'playerThrow') {
+            //this will only ever happen if the round ended
+            //(i.e. both players have registered their throw on the server)
+
+            for (var p in stateData.playerData) {
+            
+                if (stateData.playerData.hasOwnProperty(p)) {
+
+                    var playerData = stateData.playerData[p];
+
+                    if (p === that.you.id) {
+                        
+                        that.you.ready = playerData.ready;
+                        that.you.updateReadyIcon();
+                        that.you.record = playerData.record;
+                        that.you.updateHand(playerData.currentThrow);
+
+                    } else {
+
+                        that.them.ready = playerData.ready;
+                        that.them.updateReadyIcon();
+                        that.them.record = playerData.record;
+                        that.them.updateHand(playerData.currentThrow);
+
+                    }
+                }
+
+            }
+            
+            console.log(stateData);
+        }                  
+ 
 
     });            
 
     connection.on('updateGameState', function (stateData) {
 
         if (stateData.inResponseTo === 'playerReady') {
+            //this will only ever happen if the game started on the server... kinda weak?
             console.log('Both players must now be ready so the game will start now');
             
             that.hasBegun = stateData.gameData.hasBegun;
             that.start();
             console.log(stateData);
         }          
+
+        if (stateData.inResponseTo === 'playerThrow') {
+            //this will only ever happen if the round ended
+            //(i.e. both players have registered their throw on the server)
+
+            //So here we must:
+
+            //clear the throw selection
+            //hide throw options and show ready btn
+            that.stop()
+            that.rounds = stateData.gameData.rounds;
+        
+            console.log(stateData);
+        }                  
 
     });
 

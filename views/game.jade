@@ -8,11 +8,17 @@ block content
 		h2 Host
 			span.inRoomIndicator
 		span.readyStatus Not Ready
+		br
+		span Hand: 
+		span.hand --
 
 	div.player#guest
 		h2 Guest
 			span.inRoomIndicator
 		span.readyStatus Not Ready
+		br
+		span Hand: 
+		span.hand --
 
 
 	div#actions
@@ -25,14 +31,9 @@ block content
 			span#r Rock
 			span#p Paper
 			span#s Scissors
-	
-	div#gameStatus
-		h3 Game status
-		span Nothing Happening
-		//or |In Progress
-		//or |?
 
-	div#countdown		
+	div#countdown
+		h3 Countdown
 
 block append scripts
 	script(src='/socket.io/socket.io.js')

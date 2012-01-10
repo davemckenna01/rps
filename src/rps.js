@@ -227,6 +227,8 @@ var RPS = function () {
                     allPlayerData[player.getId()] = {};
                     allPlayerData[player.getId()].ready = player.isReady();   
                     allPlayerData[player.getId()].role = player.getRole();
+                    allPlayerData[player.getId()].record = player.getRecord();
+                    allPlayerData[player.getId()].currentThrow = player.getCurrentThrow();
                 }                
             }            
 
@@ -241,7 +243,6 @@ var RPS = function () {
                         playerData: allPlayerData
                     });
 
-                    console.log(this.getPlayers());
                 }
             }  
                       
@@ -252,7 +253,8 @@ var RPS = function () {
 
             var gameData = {
                 ready: this.isReady(),
-                hasBegun: this.hasBegun()
+                hasBegun: this.hasBegun(),
+                rounds: this.getRounds()
             }
 
             for (var key in this.getPlayers()){
@@ -281,7 +283,8 @@ var RPS = function () {
                 'ties': 0
             },
             role,
-            socket;
+            socket,
+            currentThrow;
 
         if (arguments.length <= 0 || typeof id !== 'string') {
             throw new Error('Player() takes exactly 1 string arg');
@@ -332,9 +335,17 @@ var RPS = function () {
             socket = s;
         }
 
-        this.getSocket = function(s){
+        this.getSocket = function(){
             return socket;
         }
+
+        this.setCurrentThrow = function(t){
+            currentThrow = t;
+        }
+
+        this.getCurrentThrow = function(){
+            return currentThrow;
+        }        
 
     };
 
@@ -353,7 +364,6 @@ var RPS = function () {
                 });
 
                 socket.on('joinGame', function (data) {
-                    console.log('player', socket.id, 'is trying to join game', data.gameId);
 
                     var game = that.getGames().hasOwnProperty(data.gameId) ? that.getGames()[data.gameId] : null;
 
@@ -371,14 +381,10 @@ var RPS = function () {
                                 game.updatePlayerStates(game.getHost().getId(), 'joinGame');
                             }
 
-                            console.log('gameJoinSuccess');
-
                         } catch (e) {
                             socket.emit('gameJoinFailure', {
                                 message: 'hi from node, you\'re player id # ' + player.getId() + ' and you\'ve FAILED to join game ' + game.getId() + ' because there\'s already 2 players'
                             });
-                            console.log('gameJoinFailure');
-                            console.log('error:', e.message);
                         }
 
                     } else {
@@ -386,9 +392,6 @@ var RPS = function () {
                         socket.emit('gameJoinFailure', {
                             message: 'hi from node, you\'re player id #' + player.getId() + ' and you\'ve FAILED to join game ' + game.getId() + ' because that game doesn\'t exist'
                         });
-
-                        console.log('gameJoinFailure');
-                        console.log('there\'s no game with that id');
                     }
 
                     socket.on('playerReady', function(){
@@ -406,12 +409,21 @@ var RPS = function () {
                     
                     socket.on('playerThrow', function(data){
 
-                        game.registerThrow(player.getId(), data.playerThrow);
+                        player.setCurrentThrow(data.playerThrow);
+                        game.registerThrow(player.getId(), player.getCurrentThrow());
+
 
                         if (!game.hasBegun()){
-                            console.log('the game must be over');
-                            console.log(game.getResults());
+                            game.again();//can probably call this from within the game...
+                            //since they games will always loop back to again
+                            //i.e. the players won't have to say "let's go again!" or anything...
+
+                            game.updatePlayerStates(player.getId(), 'playerThrow');
+                            game.updateGameState(player.getId(), 'playerThrow');
                             
+
+                            console.log(game.getHost().isReady());
+                            console.log(game.getHost().isReady());
                         }
                         
                     });                                        
