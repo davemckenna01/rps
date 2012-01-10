@@ -12,14 +12,15 @@ var RPS = function () {
     this.Game = function (id) {
         var gamePlayers = {},
             rounds = 0,
-            inProgress,
+            //This wording is terrible, change to status or something less awkward
+            hasBegun,
             playerThrows,
             results,
             host,
             guest;
 
         function initGameProps() {
-            inProgress = false;
+            hasBegun = false;
             playerThrows = {};
             results = {};
         }
@@ -89,7 +90,7 @@ var RPS = function () {
             if (!this.isReady()) {
                 return false;
             } else {
-                inProgress = true;
+                hasBegun = true;
 
                 //re-initializing (clearing) obj to keep track of
                 //player throws
@@ -99,8 +100,8 @@ var RPS = function () {
             }
         };
 
-        this.isInProgress = function () {
-            return inProgress;
+        this.hasBegun = function () {
+            return hasBegun;
         };
 
         this.getPlayerThrows = function () {
@@ -108,7 +109,7 @@ var RPS = function () {
         };
 
         this.registerThrow = function (player, throwRPS) {
-            if (!this.isInProgress()) {
+            if (!this.hasBegun()) {
                 return false;
             }
 
@@ -140,7 +141,7 @@ var RPS = function () {
 
         //This smells funny
         this.endRound = function () {
-            inProgress = false;
+            hasBegun = false;
             results = this.determineWinner(playerThrows);
 
             if (results === 'tie') {
@@ -245,6 +246,31 @@ var RPS = function () {
             }  
                       
         }
+
+        //Not tested
+        this.updateGameState = function(initiatorId, inResponseTo) {
+
+            var gameData = {
+                ready: this.isReady(),
+                hasBegun: this.hasBegun()
+            }
+
+            for (var key in this.getPlayers()){
+                if (this.getPlayers().hasOwnProperty(key)) {
+                    
+                    var player = this.getPlayers()[key];
+
+                    player.getSocket().emit('updateGameState', {
+                        inResponseTo: inResponseTo,
+                        initiatorId: initiatorId,
+                        gameData: gameData
+                    });
+
+                }
+            }  
+                      
+        }
+                
     };
 
     this.Player = function (id) {
@@ -370,6 +396,11 @@ var RPS = function () {
                         player.ready();
 
                         game.updatePlayerStates(player.getId(), 'playerReady');
+
+                        if (game.isReady()){
+                            game.start();
+                            game.updateGameState(player.getId(), 'playerReady');
+                        }
                         
                     });                    
 

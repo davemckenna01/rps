@@ -39,9 +39,9 @@ var Player = function (id) {
 var Game = function () {
 
     var gameId = window.location.href.split('/')[window.location.href.split('/').length - 1],
-        connection = io.connect('http://localhost:8000');
-
-    var that = this;
+        connection = io.connect('http://localhost:8000'),
+        that = this;
+    
     this.con = connection;
     
     this.you;
@@ -49,6 +49,8 @@ var Game = function () {
     this.them;
 
     this.players = {};
+
+    this.hasBegun;
 
     this.joinPlayer = function (playerId) {
 
@@ -172,6 +174,16 @@ var Game = function () {
         }        
 
     });            
+
+    connection.on('updateGameState', function (stateData) {
+
+        if (stateData.inResponseTo === 'playerReady') {
+            console.log('Both players must now be ready so the game will start now');
+            
+            console.log(stateData);
+        }          
+
+    });
 
 }
 

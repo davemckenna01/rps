@@ -297,7 +297,7 @@ module.exports = testCase({
 
     },
 
-    "test should set game.inProgress to true if game.isReady()": function(test) {
+    "test should set game.hasBegun to true if game.isReady()": function(test) {
         
       var game = new this.rps.Game('abc123');
 
@@ -314,7 +314,7 @@ module.exports = testCase({
 
       game.start();
 
-      test.ok(game.isInProgress());
+      test.ok(game.hasBegun());
 
       test.done();
 
@@ -346,7 +346,7 @@ module.exports = testCase({
   
   "TC 5 - Game.registerThrow()": testCase({
 
-    "test should only execute (i.e. return true) if game.isInProgress": function(test) {
+    "test should only execute (i.e. return true) if game.hasBegun": function(test) {
 
       var game = new this.rps.Game('abc123');
 
@@ -590,7 +590,7 @@ module.exports = testCase({
 
   "TC 7 - Game.endRound(), called when 2nd throw has been registered.": testCase({
 
-    "test should reset game.inProgress back to false": function(test) {    
+    "test should reset game.hasBegun back to false": function(test) {    
         
       var game = new this.rps.Game('abc123');
 
@@ -608,7 +608,7 @@ module.exports = testCase({
       game.registerThrow(player1.getId(), 'r');
       game.registerThrow(player2.getId(), 'p');
 
-      test.equal(game.isInProgress(), false);
+      test.equal(game.hasBegun(), false);
 
       test.done();
 
@@ -736,7 +736,7 @@ module.exports = testCase({
 
       game.again();
 
-      test.equal(game.isInProgress(), false);
+      test.equal(game.hasBegun(), false);
       test.equal(Object.keys(game.getPlayerThrows()).length, 0);
       test.equal(Object.keys(game.getResults()).length, 0);
 
