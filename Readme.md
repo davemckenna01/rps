@@ -4,6 +4,6 @@ To run, just:
 
 > node app.js
 
-Express server listening on port 8000
+> Express server listening on port 8000
 
 Go to http://localhost:8000 in your browser and you're done.
