@@ -89,13 +89,19 @@ var Game = function () {
     //Again ... this is SO bad
     this.hasBegun;
 
+    this.showHelp = function (player) { 
+        if (player.role === 'host') {
+            $('#help').show();    
+        }
+    };
+
     this.clearCountdown = function () {
         $('#countdown').html('');
-    }
+    };
 
     this.clearHands = function () {
         $('.hand').html('');
-    }
+    };
 
     this.joinPlayer = function (playerId) {
 
@@ -210,6 +216,7 @@ var Game = function () {
                 that.you.role = youState.role;
                 that.you.indicateInRoom();
                 that.you.highlight();
+                that.showHelp(that.you);
 
             } else {
                 console.log('that\'s them');

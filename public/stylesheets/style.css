@@ -57,6 +57,11 @@ h1 {
 	color:#eee;
 }
 
+#createGame {
+	margin-top:30px;
+
+}
+
 div#mainContent {
 	padding:0px 10px 10px 10px;
 }
@@ -205,7 +210,11 @@ div#mainContent {
 	margin-right:20px;
 }
 
-#createGame {
-	margin-top:30px;
-
+#help {
+	display:none;
+	padding: 10px 0px;
+	font-size:1.3em;
+	line-height:1.4em;
+	color:#777;
 }
+
