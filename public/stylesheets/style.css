@@ -46,13 +46,15 @@ table {
 
 body {
 	font-family: Helvetica, Arial, "Lucida Grande", Verdana, sans-serif;
-	background-color:lightyellow;
+	background-color:#D8FFEC;
 	font-size:62.5%;
 }
 
 h1 {
 	font-size: 3em;
-	padding:10px 10px 0px 10px;
+	padding:10px;
+	background-color:#333;
+	color:#eee;
 }
 
 div#mainContent {
@@ -86,22 +88,22 @@ div#mainContent {
 }
 
 .player .playerInfo .inRoomIndicator.notInRoom {
-	background-color:red;
+	background-color:#FF6861;
 }
 
 .player .playerInfo .inRoomIndicator.inRoom {
-	background-color:lightgreen;
+	background-color:#61FF9B;
 }
 
 .player .playerInfo .readyStatus {
 }
 
 .player .playerInfo .readyStatus.notReady {
-	background-color:red;
+	background-color:#FF6861;
 }
 
 .player .playerInfo .readyStatus.ready {
-	background-color:lightgreen;
+	background-color:#61FF9B;
 }
 
 .player .persona {
@@ -110,10 +112,11 @@ div#mainContent {
 	display:block;
 	height:110px;
 	position:relative;
+	background-color:#eee;
 }
 
 .player.you .persona {
-	background-color:pink;
+	background-color:#FEDCD7;
 }
 
 .thisIsYou {
@@ -125,6 +128,8 @@ div#mainContent {
 	font-size:.8em;
 	border-left:1px solid #999;
 	border-bottom:1px solid #999;
+	background-color:#B26B61;
+	color:#fff;
 }
 
 .you .thisIsYou {
@@ -169,7 +174,7 @@ div#mainContent {
 	display:inline-block;
 	padding:10px;
 	border:1px solid #999;
-	background-color:lavender;
+	background-color:#FFC7BF;
 	cursor:pointer;
 	font-size:1.4em;
 	color:#222;
