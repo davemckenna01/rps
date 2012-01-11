@@ -38,7 +38,7 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', function(req, res){
-    res.render('index', { title: 'Create Game' });    
+    res.render('index', {});
 });
 
 app.get('/create', function(req, res){
@@ -54,7 +54,7 @@ app.get('/game/:id', function(req, res){
 
     console.log(game.getId(), game);
 
-    res.render('game', { title: 'Game time y\'all', gameId: game.getId() });
+    res.render('game', {});
 });
 
 app.listen(8000);

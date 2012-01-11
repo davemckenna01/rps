@@ -1,39 +1,39 @@
 extends layout
 
 block content
-	h1= title
-	p Welcome to game #{gameId}
+	div#countdown
+		h3 Countdown
 
 	div.player#host
-		h2 Host
-			span.inRoomIndicator
-		span.readyStatus Not Ready
-		br
-		span Hand: 
-		span.hand --
+		div.playerInfo
+			div.inRoomIndicator.notInRoom
+				|Not Here
+			div.readyStatus.notReady
+				|Not Ready
+		div.persona
+			h2 Host 
+			span Hand: 
+			span.hand --
 
 	div.player#guest
-		h2 Guest
-			span.inRoomIndicator
-		span.readyStatus Not Ready
-		br
-		span Hand: 
-		span.hand --
+		div.playerInfo
+			div.inRoomIndicator.notInRoom
+				|Not Here
+			div.readyStatus.notReady
+				|Not Ready
+		div.persona
+			h2 Guest 
+
+			span Hand: 
+			span.hand --
 
 
 	div#actions
-		
-		h3 Player Actions
-
 		span#ready Ready
-
 		div#throws
 			span#r Rock
 			span#p Paper
 			span#s Scissors
-
-	div#countdown
-		h3 Countdown
 
 block append scripts
 	script(src='/socket.io/socket.io.js')

@@ -12,7 +12,14 @@ var Player = function (id) {
 
     this.updateReadyIcon =function () {
         var readyStatus = this.ready ? 'Ready' : 'Not Ready';
-        $('#' + this.role + ' .readyStatus').text(readyStatus);
+        
+        var addClass = this.ready ? 'ready' : 'notReady';
+        var removeClass = !this.ready ? 'ready' : 'notReady';
+        
+        var $el = $('#' + this.role + ' .readyStatus');
+        
+        $el.removeClass(removeClass);
+        $el.html(readyStatus).addClass(addClass);
     };
 
     this.highlight = function () {
@@ -20,7 +27,9 @@ var Player = function (id) {
     };
 
     this.indicateInRoom = function () {
-        $('#' + this.role + ' h2 .inRoomIndicator').text(' # ' + this.id);
+        var $el = $('#' + this.role + ' .inRoomIndicator');
+        $el.removeClass('notInRoom');
+        $el.html('In Room').addClass('inRoom');
     };
 
     this.imReady = function(){
@@ -44,11 +53,11 @@ var Player = function (id) {
     };
 
     this.updateHand = function(throwType){
-        $('#' + this.role + ' .hand').text(throwType);
+        $('#' + this.role + ' .hand').html(throwType);
     }
 
     this.resetHand = function(){
-        $('#' + this.role + ' .hand').text('--');
+        $('#' + this.role + ' .hand').html('--');
     }    
 
 };
