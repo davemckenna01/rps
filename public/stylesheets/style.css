@@ -56,20 +56,22 @@ h1 {
 }
 
 div#mainContent {
-	font-size:1.4em;
+	
 }
 
 .player {
 	margin:10px 10px 10px 0px;
 	display:inline-block;
 	width:40%;
+	font-size:1.4em;
 }
 
 .player .playerInfo {
+	font-size:.9em;
 }
 
 .player .playerInfo div {
-	width:100px;
+	width:70px;
 	border:1px solid #999;
 	border-bottom:none;
 	margin-right:10px;
@@ -104,9 +106,9 @@ div#mainContent {
 
 .player .persona {
 	border:1px solid #999;
-	padding:10px;
+	padding:5px 5px 5px 8px;
 	display:block;
-	height:100px;
+	height:110px;
 }
 
 .player.you .persona {
@@ -114,24 +116,26 @@ div#mainContent {
 }
 
 .player h2 {
-	font-size:20px;
+	font-size:1.5em;
+	margin-bottom:3px;
 }
 
 .record {
 	font-size:.9em;
+	line-height:2.2em;
 }
 
 .record span {
 	margin-right:3px;
-	padding:3px;
+	padding:2px 3px;
 }
 
 .record .label {
-	background-color:#ccc;
+	background-color:#eee;
 }
 
 .record .data {
-	background-color:#eee;
+	
 }
 
 #actions {
@@ -151,8 +155,18 @@ div#mainContent {
 	border:1px solid #999;
 	background-color:lavender;
 	cursor:pointer;
+	font-size:1.4em;
 }
 
 #throws span.thrown {
 	background-color:turquoise;
+}
+
+.hand {
+	display:block;
+	height:60px;
+	line-height:60px;
+	text-align:center;
+	font-size:3.5em;
+	text-transform:uppercase;
 }

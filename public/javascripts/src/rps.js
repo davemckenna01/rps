@@ -89,6 +89,10 @@ var Game = function () {
     //Again ... this is SO bad
     this.hasBegun;
 
+    this.clearHands = function () {
+        $('.hand').html('');
+    }
+
     this.joinPlayer = function (playerId) {
 
         connection.emit('joinGame', {
@@ -239,6 +243,7 @@ var Game = function () {
 
                 that.you.ready = youState.ready;
                 that.you.updateReadyIcon();
+                that.clearHands();
 
             } else {
                 console.log('that\'s them');
