@@ -89,6 +89,10 @@ var Game = function () {
     //Again ... this is SO bad
     this.hasBegun;
 
+    this.clearCountdown = function () {
+        $('#countdown').html('');
+    }
+
     this.clearHands = function () {
         $('.hand').html('');
     }
@@ -103,7 +107,7 @@ var Game = function () {
 
     this.start = function () {
 
-        this.executeAfterCountdown(1, 1, function(){
+        this.executeAfterCountdown(1, 4, function(){
             $('#ready').hide();
             $('#throws').show();            
         });
@@ -111,16 +115,19 @@ var Game = function () {
     };
 
     this.executeAfterCountdown = function (from, to, callback) {
+        var countText;
         function loop(){  
-            console.log(from);
+
+            countText = from === to ? 'GO!' : from;
+
+            $('#countdown').append('<span>' + countText + '</span>');
             
             from += 1;
             
-            t = setTimeout(loop, 1000);
+            t = setTimeout(loop, 500);
 
             if (from === to + 1) {
                 clearTimeout(t);
-                console.log('over');
                 callback();
             }
         };
@@ -287,7 +294,7 @@ var Game = function () {
 
             }
             
-            console.log(stateData);
+            that.clearCountdown();
         }                  
  
 
