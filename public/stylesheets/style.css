@@ -117,6 +117,23 @@ div#mainContent {
 	font-size:20px;
 }
 
+.record {
+	font-size:.9em;
+}
+
+.record span {
+	margin-right:3px;
+	padding:3px;
+}
+
+.record .label {
+	background-color:#ccc;
+}
+
+.record .data {
+	background-color:#eee;
+}
+
 #actions {
 }
 

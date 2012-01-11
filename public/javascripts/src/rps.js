@@ -10,6 +10,16 @@ var Player = function (id) {
     this.connection;
     this.gameId;
 
+    this.updateRecord = function (recordData) {
+        var $recordUI = $('#' + this.role + ' .record');
+        this.record = recordData;
+
+        $recordUI.find('.wins.data').html(this.record.wins);
+        $recordUI.find('.losses.data').html(this.record.losses);
+        $recordUI.find('.ties.data').html(this.record.ties);
+
+    }
+
     this.updateReadyIcon =function () {
         var readyStatus = this.ready ? 'Ready' : 'Not Ready';
         
@@ -23,7 +33,7 @@ var Player = function (id) {
     };
 
     this.highlight = function () {
-        $('#' + this.role).addClass('you');            
+        $('#' + this.role).addClass('you');
     };
 
     this.indicateInRoom = function () {
@@ -257,14 +267,14 @@ var Game = function () {
                         
                         that.you.ready = playerData.ready;
                         that.you.updateReadyIcon();
-                        that.you.record = playerData.record;
+                        that.you.updateRecord(playerData.record);
                         that.you.updateHand(playerData.currentThrow);
 
                     } else {
 
                         that.them.ready = playerData.ready;
                         that.them.updateReadyIcon();
-                        that.them.record = playerData.record;
+                        that.them.updateRecord(playerData.record);
                         that.them.updateHand(playerData.currentThrow);
 
                     }
@@ -297,7 +307,7 @@ var Game = function () {
 
             //clear the throw selection
             //hide throw options and show ready btn
-            that.stop()
+            that.stop();
             that.rounds = stateData.gameData.rounds;
         
             console.log(stateData);
