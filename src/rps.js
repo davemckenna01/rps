@@ -14,10 +14,24 @@ var RPS = function () {
     };
 
     //////////////////////
-    //Not tested
+    //No unit test for this
     this.deletePlayer = function (id) {
         delete players[id];
     }
+
+    //////////////////////
+    //No unit test for this
+    this.deleteGame = function (id) {
+        var game = games[id];
+        if (game) {
+            for (var p in game.getPlayers()) {
+                if (game.getPlayers().hasOwnProperty(p)) {
+                    this.deletePlayer(p);
+                }
+            }
+            delete games[id];
+        }
+    }    
 
     this.Game = function (id) {
         var gamePlayers = {},
@@ -400,6 +414,7 @@ var RPS = function () {
                         socket.emit('gameJoinFailure');
                         //delete the player object we created, since it'll never join a game
                         that.deletePlayer(player.getId());
+
                     }
 
                     socket.on('playerReady', function(){
@@ -434,6 +449,31 @@ var RPS = function () {
                             console.log(e.message);
                         }                        
                     });                                        
+
+                    socket.on('disconnect', function (data) {
+                        var players,
+                            p,
+                            remainingPlayer;
+                        if (game) {
+                            players = game.getPlayers();
+                            if (Object.keys(players).length === 2) {
+                                //If game only had 1 player, then there was no opponent, that's why
+                                //we check for 2
+
+                                //The player that is NOT socket.id should emit the "opponentQuit" event
+                                for (p in players) {
+                                    if (players.hasOwnProperty(p)) {
+                                        if (p !== socket.id) {
+                                            remainingPlayer = players[p];
+                                        }
+                                    }
+                                }
+                                remainingPlayer.getSocket().emit('opponentQuit');
+                            }
+                            that.deleteGame(game.getId());
+                        }
+                    });
+
                 });
             });
         }

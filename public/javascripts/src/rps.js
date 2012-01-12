@@ -37,11 +37,16 @@ var Player = function (id) {
         $('#' + this.role).addClass('you');
     };
 
-    this.indicateInRoom = function () {
+    this.arrive = function () {
         var $inRoomIndicator = $('#' + this.role + ' .inRoomIndicator');
-        $inRoomIndicator.removeClass('notInRoom');
-        $inRoomIndicator.html('In Room').addClass('inRoom');
+        $inRoomIndicator.html('In Room').removeClass('notInRoom').addClass('inRoom');
     };
+
+    this.leave = function () {
+        var $inRoomIndicator = $('#' + this.role + ' .inRoomIndicator');
+        $inRoomIndicator.html('Not Here').removeClass('inRoom').addClass('notInRoom');
+        $('#')
+    };    
 
     this.imReady = function(){
         this.connection.emit('playerReady');        
@@ -89,6 +94,11 @@ var Game = function () {
 
     //Again ... this is SO bad
     this.hasBegun;
+
+    this.updateQuitter = function () {
+        this.them.leave();
+        $('#countdown').html('<span id="quitter">Your opponent left. To play again, <a href="/create">create a new game</a>.</span>')
+    };
 
     this.highlightReadyBtn = function () {
         $('#ready').addClass('on');
@@ -154,15 +164,17 @@ var Game = function () {
 
     this.init = function(){
         connection.on('connectionMade', function (data) {
-
             that.joinPlayer(data.playerId);
-
         });
 
         connection.on('gameJoinFailure', function (data) {
             alert('Sorry, something went wrong. Please try again.');
 
         });
+
+        connection.on('opponentQuit', function () {
+            that.updateQuitter();
+        });        
             
     };
 
@@ -218,7 +230,7 @@ var Game = function () {
                 that.you.connection = connection;         
 
                 that.you.role = youState.role;
-                that.you.indicateInRoom();
+                that.you.arrive();
                 that.you.highlight();
                 that.showHelp(that.you);
 
@@ -237,7 +249,7 @@ var Game = function () {
                 that.them.connection = connection;
 
                 that.them.role = themState.role;
-                that.them.indicateInRoom();       
+                that.them.arrive();       
                 
                 if (themState.ready){
                     that.them.ready = themState.ready;

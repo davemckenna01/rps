@@ -224,3 +224,10 @@ div#mainContent {
 	color:#777;
 }
 
+#quitter {
+	font-size:.8em;
+}
+
+#quitter a {
+	color:#b26b61;
+}
