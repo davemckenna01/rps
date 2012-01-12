@@ -75,7 +75,7 @@ var Player = function (id) {
 var Game = function () {
 
     var gameId = window.location.href.split('/')[window.location.href.split('/').length - 1],
-        connection = io.connect('http://localhost:8000'),
+        connection = io.connect('http://' + document.location.host),
         that = this;
     
     this.you;
