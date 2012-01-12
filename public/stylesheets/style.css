@@ -157,7 +157,7 @@ div#mainContent {
 }
 
 .record .label {
-	background-color:#eee;
+
 }
 
 .record .data {
@@ -187,7 +187,13 @@ div#mainContent {
 }
 
 #throws span.thrown {
-	background-color:turquoise;
+	background-color:#B26B61;
+	color:#fff;
+}
+
+#ready.on {
+	background-color:#B26B61;
+	color:#fff;	
 }
 
 .hand {

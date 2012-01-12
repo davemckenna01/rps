@@ -26,10 +26,11 @@ var Player = function (id) {
         var addClass = this.ready ? 'ready' : 'notReady';
         var removeClass = !this.ready ? 'ready' : 'notReady';
         
-        var $el = $('#' + this.role + ' .readyStatus');
+        var $readyStatus = $('#' + this.role + ' .readyStatus');
         
-        $el.removeClass(removeClass);
-        $el.html(readyStatus).addClass(addClass);
+        $readyStatus.removeClass(removeClass);
+        $readyStatus.html(readyStatus).addClass(addClass);
+
     };
 
     this.highlight = function () {
@@ -37,9 +38,9 @@ var Player = function (id) {
     };
 
     this.indicateInRoom = function () {
-        var $el = $('#' + this.role + ' .inRoomIndicator');
-        $el.removeClass('notInRoom');
-        $el.html('In Room').addClass('inRoom');
+        var $inRoomIndicator = $('#' + this.role + ' .inRoomIndicator');
+        $inRoomIndicator.removeClass('notInRoom');
+        $inRoomIndicator.html('In Room').addClass('inRoom');
     };
 
     this.imReady = function(){
@@ -88,6 +89,10 @@ var Game = function () {
 
     //Again ... this is SO bad
     this.hasBegun;
+
+    this.highlightReadyBtn = function () {
+        $('#ready').addClass('on');
+    };
 
     this.showHelp = function (player) { 
         if (player.role === 'host') {
@@ -142,7 +147,7 @@ var Game = function () {
 
     this.stop = function () {
         $('#throws span').removeClass('thrown');
-        $('#ready').show();
+        $('#ready').removeClass('on').show();
         $('#throws').hide();
         this.hasBegun = false;
     };    
@@ -257,6 +262,7 @@ var Game = function () {
 
                 that.you.ready = youState.ready;
                 that.you.updateReadyIcon();
+                that.highlightReadyBtn();
                 that.clearHands();
 
             } else {
