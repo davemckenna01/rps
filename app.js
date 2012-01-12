@@ -45,14 +45,20 @@ app.get('/create', function(req, res){
     var gameId = uuid.v4(),
         game = new rps.Game(gameId);
 
+        console.log('=============' + Object.keys(rps.getGames()).length + ' GAMES ============')
+        for (var key in rps.getGames()){
+            if (rps.getGames().hasOwnProperty(key)) {
+                console.log(key);    
+            }
+        }
+        console.log('================================')
+
     res.redirect('/game/' + game.getId());    
 });
 
 app.get('/game/:id', function(req, res){
     var gameId = req.params.id,
         game = rps.getGames()[gameId];
-
-    console.log(game.getId(), game);
 
     res.render('game', {});
 });

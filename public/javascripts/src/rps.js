@@ -160,8 +160,7 @@ var Game = function () {
         });
 
         connection.on('gameJoinFailure', function (data) {
-            console.log(data.message);
-            console.log('I (the browser player) have failed to join the game, ('+ gameId +')');
+            alert('Sorry, something went wrong. Please try again.');
 
         });
             

@@ -9,6 +9,16 @@ var RPS = function () {
         return games;
     };
 
+    this.getPlayers = function () {
+       return players; 
+    };
+
+    //////////////////////
+    //Not tested
+    this.deletePlayer = function (id) {
+        delete players[id];
+    }
+
     this.Game = function (id) {
         var gamePlayers = {},
             rounds = 0,
@@ -214,6 +224,7 @@ var RPS = function () {
             return guest;
         };
 
+        ////////////////////////////////
         //Not tested
         this.updatePlayerStates = function(initiatorId, inResponseTo) {
 
@@ -248,6 +259,7 @@ var RPS = function () {
                       
         }
 
+        ////////////////////////////////
         //Not tested
         this.updateGameState = function(initiatorId, inResponseTo) {
 
@@ -348,18 +360,16 @@ var RPS = function () {
         }        
 
     };
-
+    
+    ///////////////
+    //Not Tested
     this.connectionManager = {
-
         init: function (io) {
-
             io.sockets.on('connection', function (socket) {
-
                 var player = new that.Player(socket.id);
                 player.setSocket(socket);
 
                 socket.emit('connectionMade', {
-                    message: 'hi from node, you\'re player id # ' + player.getId() + ' and you\'re connected to me now! Though that doesn\'t mean you\'ll be able to join a game...',
                     playerId: player.getId()
                 });
 
@@ -376,67 +386,55 @@ var RPS = function () {
 
                             if (Object.keys(game.getPlayers()).length === 2){
                                 //faking the host joining the game, just to update UI
-                                //kinda hacky i know...
-
+                                //kinda wack i know...
                                 game.updatePlayerStates(game.getHost().getId(), 'joinGame');
                             }
 
                         } catch (e) {
-                            socket.emit('gameJoinFailure', {
-                                message: 'hi from node, you\'re player id # ' + player.getId() + ' and you\'ve FAILED to join game ' + game.getId() + ' because there\'s already 2 players'
-                            });
+                            socket.emit('gameJoinFailure');
+                            //delete the player object we created, since it'll never join a game
+                            that.deletePlayer(player.getId());
                         }
 
                     } else {
-
-                        socket.emit('gameJoinFailure', {
-                            message: 'hi from node, you\'re player id #' + player.getId() + ' and you\'ve FAILED to join game ' + game.getId() + ' because that game doesn\'t exist'
-                        });
+                        socket.emit('gameJoinFailure');
+                        //delete the player object we created, since it'll never join a game
+                        that.deletePlayer(player.getId());
                     }
 
                     socket.on('playerReady', function(){
+                        try {
+                            player.ready();
 
-                        player.ready();
+                            game.updatePlayerStates(player.getId(), 'playerReady');
 
-                        game.updatePlayerStates(player.getId(), 'playerReady');
-
-                        if (game.isReady()){
-                            game.start();
-                            game.updateGameState(player.getId(), 'playerReady');
-                        }
-                        
+                            if (game.isReady()){
+                                game.start();
+                                game.updateGameState(player.getId(), 'playerReady');
+                            }
+                        } catch (e) {
+                            console.log(e.message);
+                        }     
                     });     
                     
                     socket.on('playerThrow', function(data){
+                        try {
+                            player.setCurrentThrow(data.playerThrow);
+                            game.registerThrow(player.getId(), player.getCurrentThrow());
 
-                        player.setCurrentThrow(data.playerThrow);
-                        game.registerThrow(player.getId(), player.getCurrentThrow());
+                            if (!game.hasBegun()){
+                                game.again();//can probably call this from within the game...
+                                //since they games will always loop back to again
+                                //i.e. the players won't have to say "let's go again!" or anything...
 
-
-                        if (!game.hasBegun()){
-                            game.again();//can probably call this from within the game...
-                            //since they games will always loop back to again
-                            //i.e. the players won't have to say "let's go again!" or anything...
-
-                            game.updatePlayerStates(player.getId(), 'playerThrow');
-                            game.updateGameState(player.getId(), 'playerThrow');
-                            
-
-                            console.log(game.getHost().isReady());
-                            console.log(game.getHost().isReady());
-                        }
-                        
+                                game.updatePlayerStates(player.getId(), 'playerThrow');
+                                game.updateGameState(player.getId(), 'playerThrow');
+                            }
+                        } catch (e) {
+                            console.log(e.message);
+                        }                        
                     });                                        
-
                 });
-
-
-
-                
-
-
-
-
             });
         }
     };
