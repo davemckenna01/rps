@@ -1,6 +1,6 @@
 #Rock Paper Scissors - real-time multi-player, written in Node.
 
-*To run locally, just:*
+__To run locally, just:__
 
 > node app.js
 
@@ -8,6 +8,6 @@
 
 Then go to http://localhost:8000 in your browser and you're done.
 
-*Play it live, now:*
+__Play it live, now:__
 
 Visit [http://50.57.220.108:8000](http://50.57.220.108:8000)
