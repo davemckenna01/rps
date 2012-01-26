@@ -5,6 +5,7 @@ var Player = function (id) {
     this.ready = false;
     this.currentThrow;
     this.record;
+    this.game;
 
     //members connection and gameId are added within Game
     this.connection;
@@ -65,6 +66,8 @@ var Player = function (id) {
         });
 
         $('#' + throwType).addClass('thrown');
+
+        $('#throws').off('click', 'span', this.game.handleThrowClicks);
 
     };
 
@@ -128,6 +131,8 @@ var Game = function () {
 
     this.start = function () {
 
+        this.initThrowClicks();
+
         this.executeAfterCountdown(1, 4, function(){
             $('#ready').hide();
             $('#throws').show();            
@@ -178,25 +183,21 @@ var Game = function () {
             
     };
 
-    this.initButtons = function (){
-        $('#ready').click(function(){
+    this.initReadyClick = function (){
+        $('#ready').bind('click', function(){
             game.you.imReady();
         });
+    };
 
+    this.initThrowClicks = function () {
         //these should only be clickable when game
         //status is in progress/playing or w/e i'm calling it
-        $('#r').click(function(){
-            game.you.doThrow('r');
-        });
+        $('#throws').on('click', 'span', this.handleThrowClicks);
+    };
 
-        $('#p').click(function(){
-            game.you.doThrow('p');
-        });
-
-        $('#s').click(function(){
-            game.you.doThrow('s');
-        });        
-    }; 
+    this.handleThrowClicks = function (){
+        game.you.doThrow($(this).attr('id'));
+    };
 
     connection.on('updatePlayerStates', function (stateData) {
         //There's a bunch of duplication happening here - need to 
@@ -223,11 +224,13 @@ var Game = function () {
                     that.you = new Player(stateData.initiatorId);
                     that.players[that.you.id] = that.you;
                     console.log('new YOU created');
-                    that.initButtons();
+                    that.initReadyClick();
+                    that.initThrowClicks();
                 }
 
                 that.you.gameId = gameId;
-                that.you.connection = connection;         
+                that.you.game = that;
+                that.you.connection = connection;       
 
                 that.you.role = youState.role;
                 that.you.arrive();
