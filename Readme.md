@@ -2,12 +2,12 @@
 
 __To run locally, just:__
 
-> node app.js
+> node server.js
 
-> Express server listening on port 8000
+> Express server listening on port 14140
 
-Then go to http://localhost:8000 in your browser and you're done.
+Then go to http://localhost:14140 in your browser and you're done.
 
 __Play it live, now:__
 
-Visit [http://50.57.220.108:8000](http://50.57.220.108:8000)
+Visit [rock.nodester.com](http://rock.nodester.com)
