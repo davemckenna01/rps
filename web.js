@@ -55,7 +55,7 @@ app.get('/game/:id', function(req, res){
     res.render('game', {});
 });
 
-app.listen(14140);
+app.listen(29384);
 
 console.log("Express server listening on port %d in %s mode", 
             app.address().port, app.settings.env);
