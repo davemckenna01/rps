@@ -10,4 +10,4 @@ Then go to http://localhost:14140 in your browser and you're done.
 
 __Play it live, now:__
 
-Visit [furious-samurai-8903.herokuapp.com](http://furious-samurai-8903.herokuapp.com/)
+Visit [rps.herokuapp.com](http://rps.herokuapp.com/)
