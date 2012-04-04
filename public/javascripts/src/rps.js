@@ -170,6 +170,7 @@ var Game = function () {
     this.init = function(){
         connection.on('connectionMade', function (data) {
             that.joinPlayer(data.playerId);
+            $('#connecting').css('display', 'none');
         });
 
         connection.on('gameJoinFailure', function (data) {
