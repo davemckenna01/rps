@@ -174,7 +174,7 @@ var Game = function () {
         });
 
         connection.on('gameJoinFailure', function (data) {
-            alert('Sorry, something went wrong. Please try again.');
+            alert('Sorry, something went wrong. You probably need to start a new game. I probably need to write better error messages.');
 
         });
 
