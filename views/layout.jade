@@ -1,17 +1,25 @@
 !!! 5
 html
-	head
-		block head
-			title Rock Paper Scissors
-			link(rel='stylesheet', href='/stylesheets/style.css')
-			
-	body
-		
-		h1 Rock Paper Scissors
+  head
+    block head
+      title Rock Paper Scissors
+      link(rel='stylesheet', href='/stylesheets/style.css')
 
-		div#mainContent	
+      script(type='text/javascript')
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-31155592-1']);
+        _gaq.push(['_trackPageview']);
 
-			block content
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
 
-		block scripts
-			script(src='/javascripts/lib/jquery-1.7.1.min.js')
+  body
+    h1 Rock Paper Scissors
+    div#mainContent	
+      block content
+
+    block scripts
+      script(src='/javascripts/lib/jquery-1.7.1.min.js')

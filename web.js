@@ -12,6 +12,14 @@ var express = require('express'),
 
     rps = require('./src/rps');
 
+////////////////////////////////////
+//Should run this only on heroku...
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
+////////////////////////////////////
+
 rps = new rps.RPS();
 rps.connectionManager.init(io, rps);
 
